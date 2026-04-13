@@ -1,0 +1,34 @@
+==================================================
+  ASSEMBLING WATERTIGHT MESH
+==================================================
+-> [G1] Building bottom face (S1)...
+   ✓ Bottom face created from 30 segments.
+-> [G2] Building top surface and hole caps...
+   ✓ 149 top faces + 38 hole1 caps + 35 hole2 caps.
+-> [G3] Building side walls (S5)...
+   ✓ 74 side wall faces.
+
+-> [G4] Sewing 297 faces together...
+   ► FREE EDGES: 0
+   🟢 SUCCESS: Mesh is 100% Watertight!
+   ℹ️ 1 shell(s) found.
+   ✓ Solid created. Volume = 997.161
+--- [G4] Complete ✓ ---
+
+-> [G6] Drawing circle profiles from S6 (Z=0)...
+   ✓ Circle 1: 26 pts | Circle 2: 26 pts
+--- [G6] Complete ✓ ---
+
+-> [G7] Extrude-cut S6 circles +4mm in Z...
+--- [G7] Complete ✓ ---
+
+-> [G8] Drawing circle profiles from S7 (Z=1)...
+   ✓ Circle 3: 26 pts | Circle 4: 26 pts
+--- [G8] Complete ✓ ---
+
+-> [G9] Extrude-cut S7 circles +4mm in Z...
+--- [G9] Complete ✓ ---
+
+-> [G5] Exporting to STL...
+   ✓ Saved: 1_Art4BearingFix_build123d_G_1_9.stl (48.7 KB)
+--- [G5] STL Export complete ✓ ---

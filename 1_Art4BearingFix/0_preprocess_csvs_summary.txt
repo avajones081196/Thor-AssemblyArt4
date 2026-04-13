@@ -1,0 +1,25 @@
+============================================================
+0_preprocess_csvs.py  Execution Log
+Time: 2026-04-13 14:55:45
+============================================================
+
+Found 9 CSV file(s) in input folder.
+
+WROTE    S1: Fusion_Coordinates_S1.csv → Fusion_Coordinates_S1.csv
+MERGED   S2: 3 files → Fusion_Coordinates_S2.csv  [1 duplicate(s) removed]
+           ↳ 1 triangle duplicate(s) (same 3 vertices, any winding order)
+WROTE    S3: Fusion_Coordinates_S3.csv → Fusion_Coordinates_S3.csv
+WROTE    S4: Fusion_Coordinates_S4.csv → Fusion_Coordinates_S4.csv  [4 duplicate(s) removed]
+           ↳ 4 line duplicate(s) (same 2 endpoints, any direction)
+WROTE    S5: Fusion_Coordinates_S5.csv → Fusion_Coordinates_S5.csv
+WROTE    S6: Fusion_Coordinates_S6.csv → Fusion_Coordinates_S6.csv
+WROTE    S7: Fusion_Coordinates_S7.csv → Fusion_Coordinates_S7.csv  [4 duplicate(s) removed]
+           ↳ 4 line duplicate(s) (same 2 endpoints, any direction)
+
+============================================================
+SUMMARY
+============================================================
+  Shapes skipped (already merged) : 0
+  New shapes written              : 7
+  Duplicate rows removed (total)  : 9
+============================================================
