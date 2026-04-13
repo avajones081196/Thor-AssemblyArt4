@@ -11,7 +11,7 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 | Detail | Info |
 |---|---|
 | **Assigned Repo** | [AngelLM/Thor](https://github.com/AngelLM/Thor) |
-| **Submission Repo** | [Thor-AssemblyArt4](https://github.com/avajones/Thor-AssemblyArt4) |
+| **Submission Repo** | [Thor-AssemblyArt4](https://github.com/avajones081196/Thor-AssemblyArt4) |
 | **Completion** | 1 part done (Art4BearingFix) |
 | **Method** | Fusion 360 → CSV coordinates → build123d → STL → Validation |
 
