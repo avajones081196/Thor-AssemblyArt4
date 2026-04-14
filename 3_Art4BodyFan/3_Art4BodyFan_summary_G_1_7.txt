@@ -1,0 +1,63 @@
+============================================================
+  3_Art4BodyFan — build123d Assembly Script
+  Guidelines: G1 → G7  |  Run: 2026-04-14 14:35:10
+============================================================
+
+-> [G1] Reading S1 — line segments forming enclosed profile at Z=50...
+   Found 1 closed loop(s).
+   Profile loop: 22 points at Z=50.0
+   X range: [0.000, 16.750]
+   Y range: [-25.000, 25.000]
+   ✓ Profile sketch created with 22 vertices.
+--- [G1] Complete ✓ ---
+
+-> [G2] Extruding profile 50.0 in −Z...
+   ✓ Volume after G2 = 31814.4686 mm³
+--- [G2] Complete ✓ ---
+
+-> [G4] Reading S2 — rectangular profile on YZ plane (X=0)...
+   Rectangle: 4 points
+     P1: (0.000, 20.500, 4.500)
+     P2: (0.000, 20.500, 45.500)
+     P3: (0.000, -20.500, 45.500)
+     P4: (0.000, -20.500, 4.500)
+--- [G4] Complete ✓ ---
+
+-> [G5] Extrude-cutting rectangle by 11.0 in +X...
+   ✓ Volume after G5 = 13384.7823 mm³
+--- [G5] Complete ✓ ---
+
+-> [G6] Reading S3 — arc-slot + 4 circles at X=11...
+   ✓ 3_point_arc_1: (-5.096,43.304) mid=(-19.000,25.000) end=(-5.096,6.696)
+   ✓ 3_point_arc_2: (5.096,6.696) mid=(19.000,25.000) end=(5.096,43.304)
+   ✓ 3_point_circle_1: center(Y,Z)=(16.000, 9.000), R=1.700
+   ✓ 3_point_circle_2: center(Y,Z)=(16.000, 41.000), R=1.700
+   ✓ 3_point_circle_3: center(Y,Z)=(-16.000, 41.000), R=1.700
+   ✓ 3_point_circle_4: center(Y,Z)=(-16.000, 9.001), R=1.700
+   Lines: 12, Arcs: 2, Circles: 4
+   Arc-slot loops found: 1
+     Loop 1: 14 segments (12 lines, 2 arcs)
+--- [G6] Complete ✓ ---
+
+-> [G7] Extrude-cutting S3 profiles by 10.0 in +X...
+   Building arc-slot profile on YZ plane at X=11...
+   ✓ Arc-slot 1 cut. Volume = 12641.3588 mm³
+   Cutting 4 screw-hole circles...
+   ✓ Circle 1 (3_point_circle_1) cut. center=(16.000,9.000), R=1.700. Volume = 12621.8255 mm³
+   ✓ Circle 2 (3_point_circle_2) cut. center=(16.000,41.000), R=1.700. Volume = 12602.2884 mm³
+   ✓ Circle 3 (3_point_circle_3) cut. center=(-16.000,41.000), R=1.700. Volume = 12582.7511 mm³
+   ✓ Circle 4 (3_point_circle_4) cut. center=(-16.000,9.001), R=1.700. Volume = 12563.2146 mm³
+   Volume after G7 = 12563.2146 mm³
+--- [G7] Complete ✓ ---
+
+-> [G3] Watertight check before export...
+   Faces in solid : 61
+   Free edges     : 0
+   🟢 SUCCESS: Mesh is watertight!
+
+   Final volume = 12563.2146 mm³
+   ✓ Saved: 3_Art4BodyFan_G_1_7.stl (262.4 KB)
+
+============================================================
+  BUILD COMPLETE — G1 through G7
+============================================================

@@ -1,0 +1,93 @@
+
+███████████████████████████████████████████████████████████
+  STL COMPARISON: Build123d  vs  Fusion 360 Original
+  Run time  : 2026-04-14  14:36:58
+███████████████████████████████████████████████████████████
+  Build123d : 3_Art4BodyFan_G_1_7.stl
+  Original  : 3_Art4BodyFan_original.stl
+  Report    : 3_Art4BodyFan_original_build123d_vs_original_G_1_7.txt
+
+  =========================================================
+  Build123d STL
+
+  =========================================================
+  File           : 3_Art4BodyFan_G_1_7.stl
+  Triangles      : 5,372  (more = finer mesh = less approx error)
+  Volume         : 12563.3659 mm³
+  Center of mass : (7.609, 0.000, 25.000) mm
+  X range        : 0.0000 → 16.7500 mm
+  Y range        : -25.0000 → 25.0000 mm
+  Z range        : 0.0000 → 50.0000 mm
+
+  =========================================================
+  Fusion 360 Original STL
+
+  =========================================================
+  File           : 3_Art4BodyFan_original.stl
+  Triangles      : 2,822  (more = finer mesh = less approx error)
+  Volume         : 12561.9102 mm³
+  Center of mass : (7.609, -0.000, 25.000) mm
+  X range        : 0.0000 → 16.7500 mm
+  Y range        : -25.0000 → 25.0000 mm
+  Z range        : 0.0000 → 50.0000 mm
+
+  =========================================================
+  VOLUME COMPARISON
+
+  =========================================================
+  Metric                                   Value  Unit
+  ---------------------------------------------------------
+  Build123d volume                    12563.3659  mm³
+  Fusion volume (reference)           12561.9102  mm³
+  Absolute difference                    +1.4557  mm³  (build123d larger)
+  % error vs original                     0.0116  %
+  Rating                         🟢 EXCELLENT
+
+  =========================================================
+  SYMMETRIC DIFFERENCE  (spatial overlap quality)
+
+  =========================================================
+  Mesh A watertight : True
+  Mesh B watertight : True
+
+  Metric                                     Value  Unit
+  ---------------------------------------------------------
+  Volume A (Build123d)                  12563.3469  mm³
+  Volume B (Fusion original)            12561.9910  mm³
+  Intersection volume                   12558.2392  mm³
+  Overlap coverage (inter/Fusion)          99.9701  %
+  ---------------------------------------------------------
+  Symmetric diff volume                     8.8596  mm³
+  Sym diff % of Fusion volume               0.0705  %
+  Rating                              🟢 EXCELLENT
+
+  =========================================================
+  BOUNDING BOX COMPARISON  (tolerance ±0.1 mm per axis)
+
+  =========================================================
+  Axis      Build123d       Fusion    Diff mm    % err  Status
+  -----------------------------------------------------------------
+  X min        0.0000       0.0000    +0.0000   0.000%  ✅ pass
+  X max       16.7500      16.7500    +0.0000   0.000%  ✅ pass
+  Y min      -25.0000     -25.0000    +0.0000   0.000%  ✅ pass
+  Y max       25.0000      25.0000    +0.0000   0.000%  ✅ pass
+  Z min        0.0000       0.0000    +0.0000   0.000%  ✅ pass
+  Z max       50.0000      50.0000    +0.0000   0.000%  ✅ pass
+
+  Overall bounding box : ✅ PASS
+
+  █████████████████████████████████████████████████████████
+  SUMMARY SCORECARD
+
+  █████████████████████████████████████████████████████████
+  Check                                    Score   Rating
+  -----------------------------------------------------------------
+  Volume % error                          0.012%   🟢 EXCELLENT
+  Symmetric diff % error                  0.071%   🟢 EXCELLENT
+  Overlap coverage                        99.97%   🟢 EXCELLENT
+  Bounding box                              PASS   ✅
+
+  █████████████████████████████████████████████████████████
+
+  Report saved → /Users/avajones/Documents/ava_build123d/20260413_assign/3_Art4BodyFan/3_Art4BodyFan_original_build123d_vs_original_G_1_7.txt
+
