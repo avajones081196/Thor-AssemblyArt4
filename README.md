@@ -1,3 +1,187 @@
+# Thor-AssemblyArt4
+
+Parametric reconstruction of the [Thor Open-Source Robot Arm](https://github.com/AngelLM/Thor) assembly parts using **build123d** — a Python CAD kernel built on OpenCascade.
+
+Each part is reverse-engineered from the original Fusion 360 mesh geometry via coordinate extraction, then rebuilt programmatically and validated against the original STL files.
+
+---
+
+## Project Overview
+
+| Detail | Info |
+|---|---|
+| **Assigned Repo** | [AngelLM/Thor](https://github.com/AngelLM/Thor) |
+| **Submission Repo** | [Thor-AssemblyArt4](https://github.com/avajones081196/Thor-AssemblyArt4) |
+| **Completion** | 3 parts done (Art4BearingFix, Art4BodyBot, Art4BodyFan) |
+| **Method** | Fusion 360 → CSV coordinates → build123d → STL → Validation |
+
+---
+
+## Parts Progress
+
+| # | Part Name | Completion | Vol. Diff (%) | Sym. Diff (%) | Time |
+|---|---|---|---|---|---|
+| 1 | Art4BearingFix | ✅ Done | 0.036% | 0.050% | 5 hrs |
+| 2 | Art4BodyBot | ✅ Done | 0.030% | 0.037% | 4 hrs |
+| 3 | Art4BodyFan | ✅ Done | 0.012% | 0.071% | 2 hrs |
+
+**Total Time: 11 hours**
+
+*Additional parts will be added as they are identified from the Thor assembly.*
+
+---
+
+## Methodology
+
+The workflow follows a 4-stage pipeline for each part:
+
+```
+Fusion 360 Mesh  →  CSV Extraction  →  build123d Reconstruction  →  STL Validation
+     (1)                (2)                    (3)                       (4)
+```
+
+### Stage 1 — Coordinate Extraction (Fusion 360)
+
+A Fusion 360 Python script traverses the mesh body and exports vertex coordinates to CSV files. Each CSV captures a specific geometric feature:
+
+- **Flat profiles** — Line segments forming closed outlines (base faces)
+- **Triangular faces** — Vertex triplets defining mesh surfaces (top, sides)
+- **Hole boundaries** — Line loops defining hole edges on curved surfaces
+- **Circle profiles** — 3-point circle definitions or polygonal approximations
+- **Hexagonal profiles** — Line-segment loops for bolt/nut pocket cuts
+- **Arc profiles** — 3-point arc definitions for curved slot openings
+
+### Stage 2 — CSV Preprocessing (`0_preprocess_csvs.py`)
+
+- Detects and merges split CSV files (e.g., `S2_1.csv`, `S2_2.csv` → `S2.csv`)
+- Removes geometry-aware duplicates (direction-independent lines, rotation-independent triangles)
+- Re-numbers steps sequentially
+- Incremental mode — safe to re-run without reprocessing existing shapes
+
+### Stage 3 — build123d Reconstruction
+
+The reconstruction follows numbered guidelines, each building on the previous. Each part has its own guideline set tailored to the geometry.
+
+**Part 1 — Art4BearingFix** (`1_1_Art4BearingFix_build123d.py`, G1–G9):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Build bottom face from line profile | S1 |
+| G2 | Build top surface triangles + fill holes | S2, S3, S4 |
+| G3 | Build side wall triangles | S5 |
+| G4 | Sew all faces → watertight shell → solid | All above |
+| G5 | Export STL (always last) | — |
+| G6 | Draw circle profiles at Z=0 | S6 |
+| G7 | Extrude-cut S6 circles +4mm in +Z | S6 |
+| G8 | Draw circle profiles at Z=1 | S7 |
+| G9 | Extrude-cut S7 circles +4mm in +Z | S7 |
+
+**Part 2 — Art4BodyBot** (`2_1_Art4BodyBot_build123d.py`, G1–G18):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Two 3-point circles → annular ring profile | S1 |
+| G2 | Extrude annular disc 4.5mm in −Z | S1 |
+| G3 | Checkpoint | — |
+| G4 | Four hexagon profiles from line segments | S2 |
+| G5 | Extrude-cut hexagons 2mm in −Z | S2 |
+| G6 | Four 3-point circle profiles at Z=2.5 | S3 |
+| G7 | Extrude-cut S3 circles 2.5mm in −Z | S3 |
+| G8 | Four 3-point circle profiles at Z=4.5 | S4 |
+| G9 | Extrude-cut S4 circles 4.5mm in −Z | S4 |
+| G10 | Four enclosed line-segment profiles | S5 |
+| G11 | Extrude (join) S5 profiles 10mm in +Z | S5 |
+| G12 | Triangular side faces + top quad lines (4 bosses) | S6 |
+| G13 | Non-planar pentagonal cap loops (fan-triangulated) | S7 |
+| G14 | Sew + orient + boolean-cut 4 boss solids | S6, S7 |
+| G15 | Four 3-point circles on tilted planes | S8 |
+| G16 | Extrude-cut S8 circles 8mm outward-normally | S8 |
+| G17 | Four 3-point circles at Z=0 (flat XY plane) | S9 |
+| G18 | Extrude-cut S9 circles 3mm in +Z | S9 |
+
+**Part 3 — Art4BodyFan** (`3_1_Art4BodyFan_build123d.py`, G1–G7):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Read S1 line segments → enclosed half-box profile at Z=50 | S1 |
+| G2 | Extrude profile 50mm in −Z | S1 |
+| G3 | Export STL + summary (deferred to end) | — |
+| G4 | Read S2 → rectangular profile on YZ plane (X=0) | S2 |
+| G5 | Extrude-cut rectangle 11mm in +X | S2 |
+| G6 | Read S3 → 1 arc-slot + 4 circle profiles at X=11 | S3 |
+| G7 | Extrude-cut S3 profiles 10mm in +X | S3 |
+
+**Key design decisions (Part 2):**
+- 3-point circles use **exact circumscribed-circle fitting** (center + radius from 3 sample points) for smooth CAD geometry.
+- Hexagons are drawn from **ordered line-segment chains** snapped into closed loops.
+- Boss cut-solids (G12–G14) are assembled from **triangular faces + polygon caps**, sewn, **normal-oriented** (`BRepLib.OrientClosedSolid_s`), then boolean-cut. Without normal orientation, the cut performs a complement subtraction instead of a true cut.
+- Tilted-plane circle cuts (G15–G16) use **3-D circumcircle computation** (center, radius, plane normal) with `BRepPrimAPI_MakePrism` along the outward normal.
+- Bottom-face circle cuts (G17–G18) use the same OCP prism approach on the flat XY plane at Z=0.
+
+**Key design decisions (Part 3):**
+- S1 profile is a **22-vertex polygon** (discretized arc + straight edges) chained into a closed loop using `order_line_segments()`.
+- S2 rectangle on the YZ plane uses build123d's `Plane.YZ` with `Mode.SUBTRACT` for the cut.
+- S3 arc-slot profile uses **OCP `GC_MakeArcOfCircle`** for 3-point arcs combined with line edges, wired together and prism-extruded via `BRepPrimAPI_MakePrism` along +X.
+- S3 screw holes use **OCP circular prism** extrusion on the YZ plane at X=11.
+
+### Stage 4 — Validation (`*_compare_stl_files.py`)
+
+Compares the build123d STL against the original downloaded from the Thor repo:
+
+- **Volume comparison** — absolute difference + % error
+- **Symmetric difference** — boolean intersection to measure spatial overlap
+- **Bounding box check** — per-axis tolerance ±0.1mm
+- **Summary scorecard** — automatic grading (Excellent / Good / Acceptable / Poor)
+
+---
+
+## Part 1: Art4BearingFix — Results
+
+```
+🟢 EXCELLENT across all metrics
+
+Volume % error:          0.036%
+Symmetric diff % error:  0.050%
+Overlap coverage:        99.99%
+Bounding box:            ✅ PASS (all axes within ±0.1mm)
+
+Watertight mesh:         ✅ 0 free edges
+Solid volume:            880.307 mm³  (original: 879.991 mm³)
+```
+
+## Part 2: Art4BodyBot — Results
+
+```
+🟢 EXCELLENT across all metrics
+
+Volume % error:          0.030%
+Symmetric diff % error:  0.037%
+Overlap coverage:        100.00%
+Bounding box:            ✅ PASS (all axes within ±0.1mm)
+
+Watertight mesh:         ✅ 0 free edges
+Solid volume:            43,401.296 mm³  (original: 43,384.240 mm³)
+```
+
+## Part 3: Art4BodyFan — Results
+
+```
+🟢 EXCELLENT across all metrics
+
+Volume % error:          0.012%
+Symmetric diff % error:  0.071%
+Overlap coverage:        99.97%
+Bounding box:            ✅ PASS (all axes within ±0.1mm)
+
+Watertight mesh:         ✅ 0 free edges
+Solid volume:            12,563.366 mm³  (original: 12,561.910 mm³)
+```
+
+---
+
+## Repository Structure
+
+```
 Thor-AssemblyArt4/
 ├── README.md
 ├── requirements.txt
@@ -91,3 +275,69 @@ Thor-AssemblyArt4/
 │   └── 3_Art4BodyFan_original_build123d_vs_original_G_1_7.txt
 │
 └── ...                                  # Additional parts as identified
+```
+
+---
+
+## Setup & Usage
+
+### Prerequisites
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### requirements.txt
+
+```
+build123d
+ocp_vscode
+numpy-stl
+trimesh
+manifold3d
+```
+
+### Running (per part)
+
+```bash
+# 1. Preprocess CSVs (merge splits, remove duplicates)
+python 0_preprocess_csvs.py
+
+# 2. Build the part
+python 3_1_Art4BodyFan_build123d.py
+
+# 3. Compare against original
+python 3_2_compare_stl_files.py
+```
+
+---
+
+## CSV Format
+
+All coordinate files follow the same schema:
+
+| Column | Description |
+|---|---|
+| Steps | Sequential row number |
+| Draw Type | `Line`, `triangular_face_N`, `3_point_arc_N`, `3_point_circle_N`, `Point` |
+| X1, Y1, Z1 | First point coordinates |
+| X2, Y2, Z2 | Second point (or `NA`) |
+| X3, Y3, Z3 | Third point (or `NA`) |
+
+---
+
+## Technologies
+
+- **Fusion 360** — Source mesh geometry + coordinate extraction
+- **build123d** — Python CAD kernel (OpenCascade-based)
+- **OCP CAD Viewer** — VS Code extension for 3D visualization
+- **trimesh + manifold3d** — STL comparison and boolean operations
+- **numpy-stl** — Mesh property calculations
+
+---
+
+## License
+
+This project reconstructs parts from the [Thor robot arm](https://github.com/AngelLM/Thor) by AngelLM, which is shared under open-source terms. This reconstruction is for educational purposes.
