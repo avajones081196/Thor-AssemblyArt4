@@ -1,0 +1,179 @@
+============================================================
+  2_Art4BodyBot — build123d Assembly Script
+  Guidelines: G1 → G18  |  Run: 2026-04-14 11:18:53
+============================================================
+
+-> [G1] Reading S1 — two 3-point circle profiles...
+   ✓ 3_point_circle_1: center=(0.000,0.000), R=12.000, Z=4.5
+   ✓ 3_point_circle_2: center=(0.000,0.000), R=55.000, Z=4.5
+
+   Inner R=12.000  Outer R=55.000  Z=4.5
+   ✓ Annular sketch: outer R=55.000, inner R=12.000
+--- [G1] Complete ✓ ---
+
+-> [G2] Extruding annular profile 4.5 in −Z...
+   ✓ Volume = 40729.4185 mm³
+--- [G2] Complete ✓ ---
+
+-> [G3] Checkpoint — annular disc built. Export deferred to end.
+--- [G3] Checkpoint ✓ ---
+
+-> [G4] Reading S2 — four hexagon profiles...
+   Found 4 closed polygon(s).
+   Hexagon 1: 6 pts, centroid=(20.153,20.153), Z=4.5
+   Hexagon 2: 6 pts, centroid=(20.153,-20.153), Z=4.5
+   Hexagon 3: 6 pts, centroid=(-20.153,-20.153), Z=4.5
+   Hexagon 4: 6 pts, centroid=(-20.153,20.153), Z=4.5
+--- [G4] Complete ✓ ---
+
+-> [G5] Cutting 4 hexagons by 2.0 in −Z...
+   ✓ Hexagon 1 cut.
+   ✓ Hexagon 2 cut.
+   ✓ Hexagon 3 cut.
+   ✓ Hexagon 4 cut.
+   Volume after G5 = 40496.1379 mm³
+--- [G5] Complete ✓ ---
+
+-> [G6] Reading S3 — four 3-point circle profiles...
+   ✓ 3_point_circle_1: center=(-20.153,20.152), R=1.700, Z=2.5
+   ✓ 3_point_circle_2: center=(20.153,20.152), R=1.700, Z=2.5
+   ✓ 3_point_circle_3: center=(20.153,-20.153), R=1.700, Z=2.5
+   ✓ 3_point_circle_4: center=(-20.153,-20.153), R=1.700, Z=2.5
+   Total S3 circles: 4
+--- [G6] Complete ✓ ---
+
+-> [G7] Cutting 4 S3 circles by 2.5 in −Z...
+   ✓ S3 circle 1 cut (R=1.700, Z=2.5).
+   ✓ S3 circle 2 cut (R=1.700, Z=2.5).
+   ✓ S3 circle 3 cut (R=1.700, Z=2.5).
+   ✓ S3 circle 4 cut (R=1.700, Z=2.5).
+   Volume after G7 = 40405.3399 mm³
+--- [G7] Complete ✓ ---
+
+-> [G8] Reading S4 — four 3-point circle profiles...
+   ✓ 3_point_circle_1: center=(-31.700,7.499), R=1.700, Z=4.5
+   ✓ 3_point_circle_2: center=(17.900,7.501), R=1.700, Z=4.5
+   ✓ 3_point_circle_3: center=(31.700,-7.500), R=1.700, Z=4.5
+   ✓ 3_point_circle_4: center=(-17.901,-7.500), R=1.699, Z=4.5
+   Total S4 circles: 4
+--- [G8] Complete ✓ ---
+
+-> [G9] Cutting 4 S4 circles by 4.5 in −Z...
+   ✓ S4 circle 1 cut (R=1.700, Z=4.5).
+   ✓ S4 circle 2 cut (R=1.700, Z=4.5).
+   ✓ S4 circle 3 cut (R=1.700, Z=4.5).
+   ✓ S4 circle 4 cut (R=1.699, Z=4.5).
+   Volume after G9 = 40241.9348 mm³
+--- [G9] Complete ✓ ---
+
+-> [G10] Reading S5 — four enclosed line profiles...
+   Found 4 closed profile(s).
+   Profile 1: 9 pts, centroid=(-33.995,-33.995), Z=4.5
+   Profile 2: 9 pts, centroid=(-43.571,20.318), Z=4.5
+   Profile 3: 9 pts, centroid=(33.995,33.995), Z=4.5
+   Profile 4: 9 pts, centroid=(43.571,-20.318), Z=4.5
+--- [G10] Complete ✓ ---
+
+-> [G11] Extruding 4 S5 profiles by 10.0 in +Z...
+   ✓ Profile 1 extruded (join).
+   ✓ Profile 2 extruded (join).
+   ✓ Profile 3 extruded (join).
+   ✓ Profile 4 extruded (join).
+   Volume after G11 = 44324.5845 mm³
+--- [G11] Complete ✓ ---
+
+-> [G12] Reading S6 — triangular side faces + top quad lines...
+   Boss A: 8 tri faces, 4 top quad pts (angle-sorted).
+   Boss B: 8 tri faces, 4 top quad pts (angle-sorted).
+   Boss C: 8 tri faces, 4 top quad pts (angle-sorted).
+   Boss D: 8 tri faces, 4 top quad pts (angle-sorted).
+   Total S6 groups: 4
+--- [G12] Complete ✓ ---
+
+-> [G13] Reading S7 — non-planar pentagonal cap loops...
+   Found 8 closed loop(s).
+   Loop 1 → boss A: 5 pts, Z=[6.15, 7.825, 14.5], centroid=(42.732,-19.926)
+            ↳ Non-planar — will use fan_triangulate_3d ✓
+   Loop 2 → boss A: 5 pts, Z=[6.15, 7.825, 14.5], centroid=(40.013,-18.659)
+            ↳ Non-planar — will use fan_triangulate_3d ✓
+   Loop 3 → boss B: 5 pts, Z=[6.15, 7.825, 14.5], centroid=(33.340,33.340)
+            ↳ Non-planar — will use fan_triangulate_3d ✓
+   Loop 4 → boss B: 5 pts, Z=[6.15, 7.825, 14.5], centroid=(31.219,31.219)
+            ↳ Non-planar — will use fan_triangulate_3d ✓
+   Loop 5 → boss C: 5 pts, Z=[6.15, 7.825, 14.5], centroid=(-42.732,19.926)
+            ↳ Non-planar — will use fan_triangulate_3d ✓
+   Loop 6 → boss C: 5 pts, Z=[6.15, 7.825, 14.5], centroid=(-40.013,18.659)
+            ↳ Non-planar — will use fan_triangulate_3d ✓
+   Loop 7 → boss D: 5 pts, Z=[6.15, 7.825, 14.5], centroid=(-33.340,-33.340)
+            ↳ Non-planar — will use fan_triangulate_3d ✓
+   Loop 8 → boss D: 5 pts, Z=[6.15, 7.825, 14.5], centroid=(-31.219,-31.219)
+            ↳ Non-planar — will use fan_triangulate_3d ✓
+--- [G13] Complete ✓ ---
+
+-> [G14] Building 4 boss cut-solids from S6+S7...
+   Boss A: S7 cap → 5 fan triangles (Z spans [6.15, 7.825, 14.5])
+   Boss A: S7 cap → 5 fan triangles (Z spans [6.15, 7.825, 14.5])
+   Boss A: sewing 19 faces...
+   Boss A: sewn (0 free edges), normals oriented. Cutting...
+   ✓ Boss A cut. Volume = 44193.7968 mm³
+   Boss B: S7 cap → 5 fan triangles (Z spans [6.15, 7.825, 14.5])
+   Boss B: S7 cap → 5 fan triangles (Z spans [6.15, 7.825, 14.5])
+   Boss B: sewing 19 faces...
+   Boss B: sewn (0 free edges), normals oriented. Cutting...
+   ✓ Boss B cut. Volume = 44062.9902 mm³
+   Boss C: S7 cap → 5 fan triangles (Z spans [6.15, 7.825, 14.5])
+   Boss C: S7 cap → 5 fan triangles (Z spans [6.15, 7.825, 14.5])
+   Boss C: sewing 19 faces...
+   Boss C: sewn (0 free edges), normals oriented. Cutting...
+   ✓ Boss C cut. Volume = 43932.2025 mm³
+   Boss D: S7 cap → 5 fan triangles (Z spans [6.15, 7.825, 14.5])
+   Boss D: S7 cap → 5 fan triangles (Z spans [6.15, 7.825, 14.5])
+   Boss D: sewing 19 faces...
+   Boss D: sewn (0 free edges), normals oriented. Cutting...
+   ✓ Boss D cut. Volume = 43801.3959 mm³
+   Volume after G14 = 43801.3959 mm³
+--- [G14] Complete ✓ ---
+
+-> [G15] Reading S8 — four 3-point circles on tilted planes...
+   ✓ 3_point_circle_1: center=(38.065, -17.750, 9.500), R=1.700, normal=(0.9063, -0.4226, -0.0000)
+   ✓ 3_point_circle_2: center=(29.698, 29.698, 9.500), R=1.700, normal=(0.7074, 0.7068, -0.0000)
+   ✓ 3_point_circle_3: center=(-38.065, 17.750, 9.500), R=1.700, normal=(-0.9063, 0.4226, 0.0000)
+   ✓ 3_point_circle_4: center=(-29.699, -29.698, 9.500), R=1.700, normal=(-0.7071, -0.7071, 0.0004)
+   Total S8 circles: 4
+--- [G15] Complete ✓ ---
+
+-> [G16] Extrude-cutting 4 S8 circles by 8.0 outward-normally...
+   ✓ S8 circle 1 (3_point_circle_1) cut. Volume = 43756.1612 mm³
+   ✓ S8 circle 2 (3_point_circle_2) cut. Volume = 43710.9163 mm³
+   ✓ S8 circle 3 (3_point_circle_3) cut. Volume = 43665.6788 mm³
+   ✓ S8 circle 4 (3_point_circle_4) cut. Volume = 43620.4484 mm³
+   Volume after G16 = 43620.4484 mm³
+--- [G16] Complete ✓ ---
+
+-> [G17] Reading S9 — four 3-point circles at Z=0...
+   ✓ 3_point_circle_1: center=(-31.700, 7.500), R=2.950, Z=-0.0
+   ✓ 3_point_circle_2: center=(-17.901, -7.500), R=2.950, Z=-0.0
+   ✓ 3_point_circle_3: center=(17.900, 7.500), R=2.950, Z=-0.0
+   ✓ 3_point_circle_4: center=(31.700, -7.500), R=2.950, Z=0.0
+   Total S9 circles: 4
+--- [G17] Complete ✓ ---
+
+-> [G18] Extrude-cutting 4 S9 circles by 3.0 in +Z...
+   ✓ S9 circle 1 (3_point_circle_1) cut. Volume = 43565.6680 mm³
+   ✓ S9 circle 2 (3_point_circle_2) cut. Volume = 43510.8709 mm³
+   ✓ S9 circle 3 (3_point_circle_3) cut. Volume = 43456.0779 mm³
+   ✓ S9 circle 4 (3_point_circle_4) cut. Volume = 43401.2956 mm³
+   Volume after G18 = 43401.2956 mm³
+--- [G18] Complete ✓ ---
+
+-> Watertight check before export...
+   Faces in solid : 168
+   Free edges     : 0
+   🟢 SUCCESS: Mesh is watertight!
+
+   Final volume = 43401.2956 mm³
+   ✓ Saved: 2_Art4BodyBot_G_1_18.stl (1114.2 KB)
+
+============================================================
+  BUILD COMPLETE — G1 through G18
+============================================================
