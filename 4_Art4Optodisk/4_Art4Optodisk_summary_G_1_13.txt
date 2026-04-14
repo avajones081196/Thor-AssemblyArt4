@@ -1,0 +1,86 @@
+============================================================
+  4_Art4Optodisk — build123d Assembly Script
+  Guidelines: G1 → G13  |  Run: 2026-04-14 17:06:44
+============================================================
+
+-> [G1] Reading S1 — two 3-point circles at Z=0...
+   ✓ 3_point_circle_1: center=(0.0001, 0.0006), R=21.0002, Z=-0.0
+   ✓ 3_point_circle_2: center=(0.0003, -0.0002), R=30.1996, Z=0.0
+
+   Inner R=21.0002  Outer R=30.1996  Z=0.0
+   ✓ Annular sketch: outer R=30.1996, inner R=21.0002
+--- [G1] Complete ✓ ---
+
+-> [G2] Extruding annular profile 15.0 in +Z...
+   ✓ Volume after G2 = 22195.9077 mm³
+--- [G2] Complete ✓ ---
+
+-> [G4] Reading S2 — two 3-point circles at Z=5...
+   ✓ 3_point_circle_1: center=(-0.0002, -0.0000), R=21.0000, Z=5.0
+   ✓ 3_point_circle_2: center=(-0.0001, 0.0002), R=29.1997, Z=5.0
+
+   Inner R=21.0000  Outer R=29.1997  Z=5.0
+--- [G4] Complete ✓ ---
+
+-> [G5] Extrude-cutting annular groove by 10.0 in +Z...
+   ✓ Volume after G5 = 9264.7424 mm³
+--- [G5] Complete ✓ ---
+
+-> [G6] Reading S3 — countersink hole profiles...
+   ✓ 3_point_circle_1: center=(-0.0000, 23.9999), R=2.9500, Z=5.0
+   ✓ 3_point_circle_2: center=(-0.0001, 23.9995), R=1.7000, Z=2.0
+--- [G6] Complete ✓ ---
+
+-> [G7] Extrude-cutting countersink top (R=2.9500) by 3.0 in −Z...
+   ✓ Volume after G7 = 9182.7233 mm³
+--- [G7] Complete ✓ ---
+
+-> [G8] Extrude-cutting through-hole (R=1.7000) by 2.0 in −Z...
+   ✓ Volume after G8 = 9164.5648 mm³
+--- [G8] Complete ✓ ---
+
+-> [G9] Applying circular pattern — 4 countersink holes at 90° intervals...
+   Original hole at (-0.000, 24.000), dist=24.000, angle=90.0°
+   Copy 2: angle=180.0°, center=(-24.000, 0.000)
+   ✓ Copy 2 cut. Volume = 9064.3873 mm³
+   Copy 3: angle=270.0°, center=(-0.000, -24.000)
+   ✓ Copy 3 cut. Volume = 8964.2097 mm³
+   Copy 4: angle=360.0°, center=(24.000, -0.000)
+   ✓ Copy 4 cut. Volume = 8864.0321 mm³
+   Volume after G9 = 8864.0321 mm³
+--- [G9] Complete ✓ ---
+
+-> [G10] Reading S4 — 4 corner points for rectangle...
+   ✓ Point: (30.196, -0.500, 15.000)
+   ✓ Point: (30.196, 0.500, 15.000)
+   ✓ Point: (30.196, 0.500, 5.000)
+   ✓ Point: (30.196, -0.500, 5.000)
+
+   Rectangle at X=30.196
+   Y: [-0.500, 0.500], Z: [5.000, 15.000]
+--- [G10] Complete ✓ ---
+
+-> [G11] Extrude-cutting rectangle by 2.0 in −X (face offset +0.5 outside body)...
+   ✓ Rectangle slot cut. Volume = 8854.0279 mm³
+   Volume after G11 = 8854.0279 mm³
+--- [G11] Complete ✓ ---
+
+-> [G12] Reading S5 — single 3-point circle at Z=5...
+   ✓ 3_point_circle_1: center=(-0.0000, 0.0004), R=29.1999, Z=5.0
+--- [G12] Complete ✓ ---
+
+-> [G13] Extrude-cutting S5 circle (R=29.1999) by 16.0 in +Z...
+   ✓ Volume after G13 = 8853.4440 mm³
+--- [G13] Complete ✓ ---
+
+-> [G3] Watertight check before export...
+   Faces in solid : 22
+   Free edges     : 0
+   🟢 SUCCESS: Mesh is watertight!
+
+   Final volume = 8853.4440 mm³
+   ✓ Saved: 4_Art4Optodisk_G_1_13.stl (543.1 KB)
+
+============================================================
+  BUILD COMPLETE — G1 through G13
+============================================================
