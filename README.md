@@ -12,7 +12,7 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 |---|---|
 | **Assigned Repo** | [AngelLM/Thor](https://github.com/AngelLM/Thor) |
 | **Submission Repo** | [Thor-AssemblyArt4](https://github.com/avajones081196/Thor-AssemblyArt4) |
-| **Completion** | 3 parts done (Art4BearingFix, Art4BodyBot, Art4BodyFan) |
+| **Completion** | 4 parts done (Art4BearingFix, Art4BodyBot, Art4BodyFan, Art4Optodisk) |
 | **Method** | Fusion 360 → CSV coordinates → build123d → STL → Validation |
 
 ---
@@ -24,8 +24,9 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 | 1 | Art4BearingFix | ✅ Done | 0.036% | 0.050% | 5 hrs |
 | 2 | Art4BodyBot | ✅ Done | 0.030% | 0.037% | 4 hrs |
 | 3 | Art4BodyFan | ✅ Done | 0.012% | 0.071% | 2 hrs |
+| 4 | Art4Optodisk | ✅ Done | 0.003% | 0.251% | 1.5 hrs |
 
-**Total Time: 11 hours**
+**Total Time: 12.5 hours**
 
 *Additional parts will be added as they are identified from the Thor assembly.*
 
@@ -111,6 +112,24 @@ The reconstruction follows numbered guidelines, each building on the previous. E
 | G6 | Read S3 → 1 arc-slot + 4 circle profiles at X=11 | S3 |
 | G7 | Extrude-cut S3 profiles 10mm in +X | S3 |
 
+**Part 4 — Art4Optodisk** (`4_1_Art4Optodisk_build123d.py`, G1–G13):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Two 3-point circles at Z=0 → annular ring face (inner R≈21, outer R≈30.2) | S1 |
+| G2 | Extrude annular profile 15mm in +Z | S1 |
+| G3 | Watertight check + export STL + summary (deferred to end) | — |
+| G4 | Two 3-point circles at Z=5 → annular groove region (inner R≈21, outer R≈29.2) | S2 |
+| G5 | Extrude-cut annular groove 10mm in +Z | S2 |
+| G6 | Two 3-point circles at different Z levels, both centered at (0, 24) | S3 |
+| G7 | Extrude-cut countersink top (R≈2.95 at Z=5) 3mm in −Z | S3 |
+| G8 | Extrude-cut through-hole (R≈1.7 at Z=2) 2mm in −Z | S3 |
+| G9 | Circular pattern: replicate G7+G8 cuts — 4 copies at 90° intervals | S3 |
+| G10 | 4 corner points → rectangle at X≈30.196, YZ plane | S4 |
+| G11 | Extrude-cut rectangle 2mm in −X to make slot (face offset +0.5mm outside body) | S4 |
+| G12 | One 3-point circle at Z=5 → circle face (R≈29.2, centered at origin) | S5 |
+| G13 | Extrude-cut S5 circle profile 16mm in +Z | S5 |
+
 **Key design decisions (Part 2):**
 - 3-point circles use **exact circumscribed-circle fitting** (center + radius from 3 sample points) for smooth CAD geometry.
 - Hexagons are drawn from **ordered line-segment chains** snapped into closed loops.
@@ -123,6 +142,13 @@ The reconstruction follows numbered guidelines, each building on the previous. E
 - S2 rectangle on the YZ plane uses build123d's `Plane.YZ` with `Mode.SUBTRACT` for the cut.
 - S3 arc-slot profile uses **OCP `GC_MakeArcOfCircle`** for 3-point arcs combined with line edges, wired together and prism-extruded via `BRepPrimAPI_MakePrism` along +X.
 - S3 screw holes use **OCP circular prism** extrusion on the YZ plane at X=11.
+
+**Key design decisions (Part 4):**
+- All circles use **exact circumscribed-circle fitting** from 3 sample points for smooth CAD geometry.
+- Annular ring (G1–G2) and annular groove cut (G4–G5) both use `Mode.SUBTRACT` on the inner circle within `BuildSketch` to create clean ring profiles.
+- Countersink screw holes (G6–G9) use a two-depth strategy: wider countersink top (R≈2.95) cut 3mm in −Z first, then narrower through-hole (R≈1.7) cut 2mm deeper — replicated 4× via manual 90° rotation of hole centers.
+- Rectangle slot (G10–G11) uses **OCP `BRepPrimAPI_MakePrism`** directly with a +0.5mm overhang offset so the tool face starts outside the curved wall, eliminating semicircular residual artifacts from flush-face boolean operations.
+- S5 circle cut (G12–G13) uses build123d's `BuildSketch` + `extrude(..., mode=Mode.SUBTRACT)` in +Z, consistent with the annular groove approach in G4–G5.
 
 ### Stage 4 — Validation (`*_compare_stl_files.py`)
 
@@ -175,6 +201,20 @@ Bounding box:            ✅ PASS (all axes within ±0.1mm)
 
 Watertight mesh:         ✅ 0 free edges
 Solid volume:            12,563.366 mm³  (original: 12,561.910 mm³)
+```
+
+## Part 4: Art4Optodisk — Results
+
+```
+🟢 EXCELLENT across all metrics
+
+Volume % error:          0.003%
+Symmetric diff % error:  0.251%
+Overlap coverage:        99.88%
+Bounding box:            ✅ PASS (all axes within ±0.1mm)
+
+Watertight mesh:         ✅ 0 free edges
+Solid volume:            8,853.517 mm³  (original: 8,853.255 mm³)
 ```
 
 ---
@@ -274,6 +314,32 @@ Thor-AssemblyArt4/
 │   ├── 3_Art4BodyFan_summary_G_1_7.txt
 │   └── 3_Art4BodyFan_original_build123d_vs_original_G_1_7.txt
 │
+├── 4_Art4Optodisk/
+│   ├── csv_data_4_Art4Optodisk/         # Raw CSVs from Fusion 360
+│   │   ├── Fusion_Coordinates_S1.csv
+│   │   ├── Fusion_Coordinates_S2.csv
+│   │   ├── Fusion_Coordinates_S3.csv
+│   │   ├── Fusion_Coordinates_S4.csv
+│   │   └── Fusion_Coordinates_S5.csv
+│   │
+│   ├── csv_merged/                      # Preprocessed CSVs
+│   │   ├── Fusion_Coordinates_S1.csv
+│   │   ├── Fusion_Coordinates_S2.csv
+│   │   ├── Fusion_Coordinates_S3.csv
+│   │   ├── Fusion_Coordinates_S4.csv
+│   │   └── Fusion_Coordinates_S5.csv
+│   │
+│   ├── 0_preprocess_csvs.py             # Stage 2: CSV preprocessing
+│   ├── 4_1_Art4Optodisk_build123d.py    # Stage 3: build123d reconstruction (G1–G13)
+│   ├── 4_2_compare_stl_files.py         # Stage 4: STL validation
+│   │
+│   ├── 4_Art4Optodisk_original.stl      # Downloaded from Thor repo
+│   ├── 4_Art4Optodisk_G_1_13.stl        # Our reconstruction
+│   │
+│   ├── 0_preprocess_csvs_summary.txt
+│   ├── 4_Art4Optodisk_summary_G_1_13.txt
+│   └── 4_Art4Optodisk_original_build123d_vs_original_G_1_13.txt
+│
 └── ...                                  # Additional parts as identified
 ```
 
@@ -306,10 +372,10 @@ manifold3d
 python 0_preprocess_csvs.py
 
 # 2. Build the part
-python 3_1_Art4BodyFan_build123d.py
+python 4_1_Art4Optodisk_build123d.py
 
 # 3. Compare against original
-python 3_2_compare_stl_files.py
+python 4_2_compare_stl_files.py
 ```
 
 ---
