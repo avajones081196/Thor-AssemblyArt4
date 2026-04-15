@@ -1,0 +1,70 @@
+
+███████████████████████████████████████████████████████████
+  STL COMPARISON: Build123d  vs  Fusion 360 Original
+  Run time  : 2026-04-15  15:23:34
+███████████████████████████████████████████████████████████
+  Build123d : 5_Art4TransmissionColumn_G_1_16.stl
+  Original  : 5_Art4TransmissionColumn_original.stl
+  Report    : 5_Art4TransmissionColumn_original_build123d_vs_original_G_1_16.txt
+
+  =========================================================
+  Build123d STL
+
+  =========================================================
+  File           : 5_Art4TransmissionColumn_G_1_16.stl
+  Triangles      : 214,792  (more = finer mesh = less approx error)
+  Volume         : 78084.0156 mm³
+  Center of mass : (0.000, -0.000, 49.722) mm
+  X range        : -35.0000 → 35.0000 mm
+  Y range        : -35.0000 → 35.0000 mm
+  Z range        : -0.0000 → 76.0000 mm
+
+  =========================================================
+  Fusion 360 Original STL
+
+  =========================================================
+  File           : 5_Art4TransmissionColumn_original.stl
+  Triangles      : 42,604  (more = finer mesh = less approx error)
+  Volume         : 78419.4635 mm³
+  Center of mass : (0.002, 0.001, 49.538) mm
+  X range        : -35.0000 → 35.0000 mm
+  Y range        : -34.9891 → 34.9891 mm
+  Z range        : -0.0000 → 76.0000 mm
+
+  =========================================================
+  VOLUME COMPARISON
+
+  =========================================================
+  Metric                                   Value  Unit
+  ---------------------------------------------------------
+  Build123d volume                    78084.0156  mm³
+  Fusion volume (reference)           78419.4635  mm³
+  Absolute difference                  -335.4479  mm³  (build123d smaller)
+  % error vs original                     0.4278  %
+  Rating                         🟢 EXCELLENT
+
+  =========================================================
+  SYMMETRIC DIFFERENCE  (spatial overlap quality)
+
+  =========================================================
+  Mesh A watertight : True
+  Mesh B watertight : False
+  ❌ Boolean operation failed: Not all meshes are volumes!
+
+  =========================================================
+  BOUNDING BOX COMPARISON  (tolerance ±0.1 mm per axis)
+
+  =========================================================
+  Axis      Build123d       Fusion    Diff mm    % err  Status
+  -----------------------------------------------------------------
+  X min      -35.0000     -35.0000    +0.0000   0.000%  ✅ pass
+  X max       35.0000      35.0000    +0.0000   0.000%  ✅ pass
+  Y min      -35.0000     -34.9891    -0.0109   0.016%  ✅ pass
+  Y max       35.0000      34.9891    +0.0109   0.016%  ✅ pass
+  Z min       -0.0000      -0.0000    +0.0000   0.000%  ✅ pass
+  Z max       76.0000      76.0000    +0.0000   0.000%  ✅ pass
+
+  Overall bounding box : ✅ PASS
+
+  Report saved → /Users/avajones/Documents/ava_build123d/20260413_assign/5_Art4TransmissionColumn/5_Art4TransmissionColumn_original_build123d_vs_original_G_1_16.txt
+

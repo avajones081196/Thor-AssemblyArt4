@@ -1,0 +1,131 @@
+============================================================
+  5_Art4TransmissionColumn — build123d Assembly Script
+  Guidelines: G1 → G12  |  Run: 2026-04-15 15:01:33
+============================================================
+
+-> [G1] Reading S1 — revolution profile segments on YZ plane...
+   S1 total rows: 13
+   S1 lines: 11
+   S1 arcs:  2 (⚠️  will be replaced by S5 in G12)
+     3_point_arc_1: (17.000,61.500) mid=(19.500,61.500) end=(19.500,64.000)  ← BAD
+     3_point_arc_2: (35.000,65.800) mid=(35.000,69.000) end=(35.000,72.200)  ← BAD
+--- [G1] Complete ✓ ---
+
+-> [G12] Reading S5 — corrected arcs to replace S1 arcs...
+   S5 corrected arcs: 2
+     3_point_arc_1: start=(19.500,64.000) mid=(17.732,63.268) end=(17.000,61.500)  ← GOOD
+     3_point_arc_2: start=(35.000,65.800) mid=(31.800,69.000) end=(35.000,72.200)  ← GOOD
+   Found 1 closed loop(s).
+   Profile chain: 13 segments (11 lines, 2 arcs)
+   ✓ Corrected profile face created (S1 lines + S5 arcs).
+--- [G12] Complete ✓ ---
+   (G1 data read → G12 arcs fixed → profile ready for G2 revolve)
+
+-> [G2] Revolving profile 360° about Z axis...
+   ✓ Revolved solid created. Volume = 76519.3851 mm³
+--- [G2] Complete ✓ ---
+
+-> [G4] Reading S2 — circle at Z=76 (top face)...
+   ✓ Circle: center=(16.9711, 16.9705), R=1.7001, Z=76.0
+--- [G4] Complete ✓ ---
+
+-> [G5] Extrude-cutting S2 circle by 13.0 in −Z...
+   ✓ S2 circle cut. Volume = 76410.4157 mm³
+--- [G5] Complete ✓ ---
+
+-> [G6] Circular pattern — 4 holes at 90°...
+   Original hole at (16.971, 16.971), dist=24.000, angle=45.0°
+   Copy 2: angle=135.0°, center=(-16.971, 16.971)
+   Copy 3: angle=225.0°, center=(-16.971, -16.971)
+   Copy 4: angle=315.0°, center=(16.971, -16.971)
+   Volume after G6 = 76083.5073 mm³
+--- [G6] Complete ✓ ---
+
+-> [G7] Reading S3 — four hexagonal profiles at Z=76...
+   Found 4 closed polygon(s).
+   Hexagon 1: 6 pts, centroid=(-16.971, 16.971), Z=76.0
+   Hexagon 2: 6 pts, centroid=(16.971, 16.971), Z=76.0
+   Hexagon 3: 6 pts, centroid=(16.971, -16.971), Z=76.0
+   Hexagon 4: 6 pts, centroid=(-16.971, -16.971), Z=76.0
+--- [G7] Complete ✓ ---
+
+-> [G8] Cutting 4 hexagons by 7.0 in −Z...
+   ✓ Hexagon 1 cut. Volume = 75942.9523 mm³
+   ✓ Hexagon 2 cut. Volume = 75802.3973 mm³
+   ✓ Hexagon 3 cut. Volume = 75661.8423 mm³
+   ✓ Hexagon 4 cut. Volume = 75521.2873 mm³
+   Volume after G8 = 75521.2873 mm³
+--- [G8] Complete ✓ ---
+
+-> [G9] Reading S4 — countersink circles at Z=64...
+   ✓ 3_point_circle_1: center=(-28.4996, -0.0003), R=1.6998, Z=64.0
+   ✓ 3_point_circle_2: center=(-28.5000, 0.0002), R=2.9500, Z=64.0
+--- [G9] Complete ✓ ---
+
+-> [G10] Cutting countersink hole at Z=64...
+   ✓ Inner circle (R=1.700) cut 13.0 in +Z. Volume = 75412.3624 mm³
+   ✓ Outer circle (R=2.950) cut 3.0 in +Z. Volume = 75357.5746 mm³
+--- [G10] Complete ✓ ---
+
+-> [G11] Circular pattern — 4 countersink holes...
+   Original hole at (-28.500, -0.000), dist=28.500, angle=-180.0°
+   Copy 2: angle=-90.0°, center=(0.000, -28.500)
+   ✓ Copy 2 cut. Volume = 75193.8619 mm³
+   Copy 3: angle=0.0°, center=(28.500, 0.000)
+   ✓ Copy 3 cut. Volume = 75030.1492 mm³
+   Copy 4: angle=90.0°, center=(-0.000, 28.500)
+   ✓ Copy 4 cut. Volume = 74866.4365 mm³
+   Volume after G11 = 74866.4365 mm³
+--- [G11] Complete ✓ ---
+
+-> [G13] Reading S6 — front tooth profile at Z=0...
+   ✓ S6 closed loop: 33 points at Z=-0.0
+   Centroid: (0.182, 17.880)
+   ✓ S6 face created.
+--- [G13] Complete ✓ ---
+
+-> [G14] Reading S7 — back tooth profile at Z=17...
+   ✓ S7 closed loop: 36 points at Z=17.0
+   Centroid: (-9.160, 15.369)
+   ✓ S7 face created.
+--- [G14] Complete ✓ ---
+
+-> [G15] Lofting S6 → S7 to create one gear tooth...
+   ✓ Tooth loft created. Tooth volume = 183.7762 mm³
+   ✓ Tooth joined to body. Volume = 75027.9500 mm³
+--- [G15] Complete ✓ ---
+
+-> [G16] Circular pattern — 20 teeth at 18.0° intervals...
+   Tooth 2: angle=18.0°
+   Tooth 3: angle=36.0°
+   Tooth 4: angle=54.0°
+   Tooth 5: angle=72.0°
+   Tooth 6: angle=90.0°
+   Tooth 7: angle=108.0°
+   Tooth 8: angle=126.0°
+   Tooth 9: angle=144.0°
+   Tooth 10: angle=162.0°
+   Tooth 11: angle=180.0°
+   Tooth 12: angle=198.0°
+   Tooth 13: angle=216.0°
+   Tooth 14: angle=234.0°
+   Tooth 15: angle=252.0°
+   Tooth 16: angle=270.0°
+   Tooth 17: angle=288.0°
+   Tooth 18: angle=306.0°
+   Tooth 19: angle=324.0°
+   Tooth 20: angle=342.0°
+   Volume after G16 = 78097.0284 mm³ (20 teeth)
+--- [G16] Complete ✓ ---
+
+-> [G3] Watertight check before export...
+   Faces in solid : 1398
+   Free edges     : 0
+   🟢 SUCCESS: Mesh is watertight!
+
+   Final volume = 78097.0284 mm³
+   ✓ Saved: 5_Art4TransmissionColumn_G_1_16.stl (10488.0 KB)
+
+============================================================
+  BUILD COMPLETE — G1 through G16
+============================================================
