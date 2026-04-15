@@ -12,7 +12,7 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 |---|---|
 | **Assigned Repo** | [AngelLM/Thor](https://github.com/AngelLM/Thor) |
 | **Submission Repo** | [Thor-AssemblyArt4](https://github.com/avajones081196/Thor-AssemblyArt4) |
-| **Completion** | 4 parts done (Art4BearingFix, Art4BodyBot, Art4BodyFan, Art4Optodisk) |
+| **Completion** | 5 parts done (Art4BearingFix, Art4BodyBot, Art4BodyFan, Art4Optodisk, Art4TransmissionColumn) |
 | **Method** | Fusion 360 → CSV coordinates → build123d → STL → Validation |
 
 ---
@@ -25,8 +25,13 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 | 2 | Art4BodyBot | ✅ Done | 0.030% | 0.037% | 4 hrs |
 | 3 | Art4BodyFan | ✅ Done | 0.012% | 0.071% | 2 hrs |
 | 4 | Art4Optodisk | ✅ Done | 0.003% | 0.251% | 1.5 hrs |
+| 5 | Art4TransmissionColumn | ✅ Done | 0.428% | N/A* | 6 hrs |
 
-**Total Time: 12.5 hours**
+**Total Time: 18.5 hours**
+
+*\*Symmetric difference could not be computed for Part 5 because the original downloaded STL mesh is not watertight (`Mesh B watertight: False`). This is a property of the source mesh, not the reconstruction.*
+
+*Note: Small volume differences (especially on circular features) are expected because the original STL uses faceted polygon approximations for circles, while build123d uses true mathematical circle geometry — making the reconstruction more geometrically accurate than the source mesh.*
 
 *Additional parts will be added as they are identified from the Thor assembly.*
 
@@ -51,6 +56,8 @@ A Fusion 360 Python script traverses the mesh body and exports vertex coordinate
 - **Circle profiles** — 3-point circle definitions or polygonal approximations
 - **Hexagonal profiles** — Line-segment loops for bolt/nut pocket cuts
 - **Arc profiles** — 3-point arc definitions for curved slot openings
+- **Tooth profiles** — Closed polygon outlines of gear teeth at different Z planes
+- **Revolution profiles** — Line + arc chains on YZ plane for revolve operations
 
 ### Stage 2 — CSV Preprocessing (`0_preprocess_csvs.py`)
 
@@ -130,6 +137,27 @@ The reconstruction follows numbered guidelines, each building on the previous. E
 | G12 | One 3-point circle at Z=5 → circle face (R≈29.2, centered at origin) | S5 |
 | G13 | Extrude-cut S5 circle profile 16mm in +Z | S5 |
 
+**Part 5 — Art4TransmissionColumn** (`5_1_Art4TransmissionColumn_build123d.py`, G1–G16):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Read S1 — 11 lines + 2 arcs on YZ plane (report only, arcs are bad) | S1 |
+| G12 | Read S5 corrected arcs, combine with S1 lines → closed revolution profile | S1, S5 |
+| G2 | Revolve corrected profile 360° about Z axis | S1, S5 |
+| G3 | Watertight check + export STL + summary (deferred to end) | — |
+| G4 | One 3-point circle at Z=76 (top face), center at 45°, dist=24 | S2 |
+| G5 | Extrude-cut S2 circle 13mm in −Z | S2 |
+| G6 | Circular pattern of G5 — 4 copies at 90° around Z | S2 |
+| G7 | Four hexagonal line-loop profiles at Z=76 | S3 |
+| G8 | Extrude-cut 4 hexagons 7mm in −Z | S3 |
+| G9 | Two 3-point circles at Z=64 (inner R≈1.7, outer R≈2.95) | S4 |
+| G10 | Extrude-cut inner circle 13mm +Z, outer circle 3mm +Z (countersink) | S4 |
+| G11 | Circular pattern of G10 — 4 copies at 90° around Z | S4 |
+| G13 | Read S6 — front tooth profile at Z=0 (33-segment closed loop) | S6 |
+| G14 | Read S7 — back tooth profile at Z=17 (36-segment closed loop) | S7 |
+| G15 | Loft S6 → S7 via ruled ThruSections → one gear tooth, boolean-join | S6, S7 |
+| G16 | Circular pattern — 20 teeth at 18° intervals around Z axis | S6, S7 |
+
 **Key design decisions (Part 2):**
 - 3-point circles use **exact circumscribed-circle fitting** (center + radius from 3 sample points) for smooth CAD geometry.
 - Hexagons are drawn from **ordered line-segment chains** snapped into closed loops.
@@ -149,6 +177,14 @@ The reconstruction follows numbered guidelines, each building on the previous. E
 - Countersink screw holes (G6–G9) use a two-depth strategy: wider countersink top (R≈2.95) cut 3mm in −Z first, then narrower through-hole (R≈1.7) cut 2mm deeper — replicated 4× via manual 90° rotation of hole centers.
 - Rectangle slot (G10–G11) uses **OCP `BRepPrimAPI_MakePrism`** directly with a +0.5mm overhang offset so the tool face starts outside the curved wall, eliminating semicircular residual artifacts from flush-face boolean operations.
 - S5 circle cut (G12–G13) uses build123d's `BuildSketch` + `extrude(..., mode=Mode.SUBTRACT)` in +Z, consistent with the annular groove approach in G4–G5.
+
+**Key design decisions (Part 5):**
+- **First revolve-based part**: S1 revolution profile (lines + arcs on YZ plane) is revolved 360° about the Z axis using `BRepPrimAPI_MakeRevol`. Y coordinate = radial distance.
+- S1 arcs were **degenerate/reversed** in the original extraction (arc2 had collinear points at Y=35, arc1 had wrong direction). **G12 reads corrected arcs from S5** and replaces the bad S1 arcs before chaining.
+- Arc chaining uses `order_segments_with_arcs()` which handles mixed line+arc segments, with collinear-arc detection (cross-product magnitude check) to fall back to straight lines for degenerate arcs.
+- **Helical gear teeth** (G13–G16): tooth cross-sections extracted at Z=0 (S6, 33 segments) and Z=17 (S7, 36 segments), then connected via **ruled loft** using `BRepOffsetAPI_ThruSections(isSolid=True, ruled=True)`. Each tooth is boolean-fused to the main body via `BRepAlgoAPI_Fuse`.
+- Circular pattern for teeth: S6/S7 wires are **rotated via `gp_Trsf.SetRotation`** around Z axis at 18° intervals, lofted, and fused — 20 teeth total.
+- Volume difference (0.43%) is primarily from the ruled loft creating flat tooth sides vs the original's curved helical surfaces, plus the mesh-vs-circle approximation difference.
 
 ### Stage 4 — Validation (`*_compare_stl_files.py`)
 
@@ -217,6 +253,25 @@ Watertight mesh:         ✅ 0 free edges
 Solid volume:            8,853.517 mm³  (original: 8,853.255 mm³)
 ```
 
+## Part 5: Art4TransmissionColumn — Results
+
+```
+🟢 EXCELLENT (volume)  |  Sym diff: N/A (original mesh not watertight)
+
+Volume % error:          0.428%
+Symmetric diff % error:  N/A (original STL not watertight — cannot compute)
+Bounding box:            ✅ PASS (all axes within ±0.1mm)
+
+Watertight mesh:         ✅ 0 free edges (1398 faces)
+Solid volume:            78,084.016 mm³  (original: 78,419.464 mm³)
+
+Note: This is the most complex part — includes a 360° revolved body with
+helical gear teeth (20 teeth via ruled loft + circular pattern), 4 screw
+holes, 4 hexagonal bolt pockets, and 4 countersink holes. The 0.43%
+difference is primarily from ruled loft approximation of helical tooth
+surfaces and mesh-vs-circle geometry differences.
+```
+
 ---
 
 ## Repository Structure
@@ -228,117 +283,57 @@ Thor-AssemblyArt4/
 │
 ├── 1_Art4BearingFix/
 │   ├── csv_data_1_Art4BearingFix/       # Raw CSVs from Fusion 360
-│   │   ├── Fusion_Coordinates_S1.csv
-│   │   ├── Fusion_Coordinates_S2_1.csv
-│   │   ├── Fusion_Coordinates_S2_2.csv
-│   │   ├── Fusion_Coordinates_S2_3.csv
-│   │   ├── Fusion_Coordinates_S3.csv
-│   │   ├── Fusion_Coordinates_S4.csv
-│   │   ├── Fusion_Coordinates_S5.csv
-│   │   ├── Fusion_Coordinates_S6.csv
-│   │   └── Fusion_Coordinates_S7.csv
-│   │
 │   ├── csv_merged/                      # Preprocessed CSVs
-│   │   ├── Fusion_Coordinates_S1.csv
-│   │   ├── Fusion_Coordinates_S2.csv    # Merged from S2_1, S2_2, S2_3
-│   │   ├── Fusion_Coordinates_S3.csv
-│   │   ├── Fusion_Coordinates_S4.csv
-│   │   ├── Fusion_Coordinates_S5.csv
-│   │   ├── Fusion_Coordinates_S6.csv
-│   │   └── Fusion_Coordinates_S7.csv
-│   │
-│   ├── 0_preprocess_csvs.py             # Stage 2: CSV preprocessing
-│   ├── 1_1_Art4BearingFix_build123d.py  # Stage 3: build123d reconstruction
-│   ├── 1_2_compare_stl_files.py         # Stage 4: STL validation
-│   │
-│   ├── 1_Art4BearingFix_original.stl    # Downloaded from Thor repo
-│   ├── 1_Art4BearingFix_build123d_G_1_9.stl  # Our reconstruction
-│   │
-│   ├── 0_preprocess_csvs_summary.txt
-│   ├── 1_Art4BearingFix_build123d_summary_G_1_9.txt
-│   └── 1_Art4BearingFix_build123d_vs_original_G_1_9.txt
+│   ├── 0_preprocess_csvs.py
+│   ├── 1_1_Art4BearingFix_build123d.py
+│   ├── 1_2_compare_stl_files.py
+│   ├── 1_Art4BearingFix_original.stl
+│   └── 1_Art4BearingFix_build123d_G_1_9.stl
 │
 ├── 2_Art4BodyBot/
-│   ├── csv_data_2_Art4BodyBot/          # Raw CSVs from Fusion 360
-│   │   ├── Fusion_Coordinates_S1.csv
-│   │   ├── Fusion_Coordinates_S2.csv
-│   │   ├── Fusion_Coordinates_S3.csv
-│   │   ├── Fusion_Coordinates_S4.csv
-│   │   ├── Fusion_Coordinates_S5.csv
-│   │   ├── Fusion_Coordinates_S6.csv
-│   │   ├── Fusion_Coordinates_S7.csv
-│   │   ├── Fusion_Coordinates_S8.csv
-│   │   └── Fusion_Coordinates_S9.csv
-│   │
-│   ├── csv_merged/                      # Preprocessed CSVs
-│   │   ├── Fusion_Coordinates_S1.csv
-│   │   ├── Fusion_Coordinates_S2.csv
-│   │   ├── Fusion_Coordinates_S3.csv
-│   │   ├── Fusion_Coordinates_S4.csv
-│   │   ├── Fusion_Coordinates_S5.csv
-│   │   ├── Fusion_Coordinates_S6.csv
-│   │   ├── Fusion_Coordinates_S7.csv
-│   │   ├── Fusion_Coordinates_S8.csv
-│   │   └── Fusion_Coordinates_S9.csv
-│   │
-│   ├── 0_preprocess_csvs.py             # Stage 2: CSV preprocessing
-│   ├── 2_1_Art4BodyBot_build123d.py     # Stage 3: build123d reconstruction (G1–G18)
-│   ├── 2_2_compare_stl_files.py         # Stage 4: STL validation
-│   │
-│   ├── 2_Art4BodyBot_original.stl       # Downloaded from Thor repo
-│   ├── 2_Art4BodyBot_G_1_18.stl         # Our reconstruction
-│   │
-│   ├── 0_preprocess_csvs_summary.txt
-│   ├── 2_Art4BodyBot_summary_G_1_18.txt
-│   └── 2_Art4BodyBot_original_build123d_vs_original_G_1_18.txt
+│   ├── csv_data_2_Art4BodyBot/
+│   ├── csv_merged/
+│   ├── 0_preprocess_csvs.py
+│   ├── 2_1_Art4BodyBot_build123d.py
+│   ├── 2_2_compare_stl_files.py
+│   ├── 2_Art4BodyBot_original.stl
+│   └── 2_Art4BodyBot_G_1_18.stl
 │
 ├── 3_Art4BodyFan/
-│   ├── csv_data_3_Art4BodyFan/          # Raw CSVs from Fusion 360
-│   │   ├── Fusion_Coordinates_S1.csv
-│   │   ├── Fusion_Coordinates_S2.csv
-│   │   └── Fusion_Coordinates_S3.csv
-│   │
-│   ├── csv_merged/                      # Preprocessed CSVs
-│   │   ├── Fusion_Coordinates_S1.csv
-│   │   ├── Fusion_Coordinates_S2.csv
-│   │   └── Fusion_Coordinates_S3.csv
-│   │
-│   ├── 0_preprocess_csvs.py             # Stage 2: CSV preprocessing
-│   ├── 3_1_Art4BodyFan_build123d.py     # Stage 3: build123d reconstruction (G1–G7)
-│   ├── 3_2_compare_stl_files.py         # Stage 4: STL validation
-│   │
-│   ├── 3_Art4BodyFan_original.stl       # Downloaded from Thor repo
-│   ├── 3_Art4BodyFan_G_1_7.stl          # Our reconstruction
-│   │
-│   ├── 0_preprocess_csvs_summary.txt
-│   ├── 3_Art4BodyFan_summary_G_1_7.txt
-│   └── 3_Art4BodyFan_original_build123d_vs_original_G_1_7.txt
+│   ├── csv_data_3_Art4BodyFan/
+│   ├── csv_merged/
+│   ├── 0_preprocess_csvs.py
+│   ├── 3_1_Art4BodyFan_build123d.py
+│   ├── 3_2_compare_stl_files.py
+│   ├── 3_Art4BodyFan_original.stl
+│   └── 3_Art4BodyFan_G_1_7.stl
 │
 ├── 4_Art4Optodisk/
-│   ├── csv_data_4_Art4Optodisk/         # Raw CSVs from Fusion 360
-│   │   ├── Fusion_Coordinates_S1.csv
-│   │   ├── Fusion_Coordinates_S2.csv
-│   │   ├── Fusion_Coordinates_S3.csv
-│   │   ├── Fusion_Coordinates_S4.csv
-│   │   └── Fusion_Coordinates_S5.csv
+│   ├── csv_data_4_Art4Optodisk/
+│   ├── csv_merged/
+│   ├── 0_preprocess_csvs.py
+│   ├── 4_1_Art4Optodisk_build123d.py
+│   ├── 4_2_compare_stl_files.py
+│   ├── 4_Art4Optodisk_original.stl
+│   └── 4_Art4Optodisk_G_1_13.stl
+│
+├── 5_Art4TransmissionColumn/
+│   ├── csv_data_5_Art4TransmissionColumn/  # Raw CSVs from Fusion 360
+│   │   ├── Fusion_Coordinates_S1.csv       # Revolution profile (lines + arcs)
+│   │   ├── Fusion_Coordinates_S2.csv       # Screw hole circle
+│   │   ├── Fusion_Coordinates_S3.csv       # Hexagonal profiles
+│   │   ├── Fusion_Coordinates_S4.csv       # Countersink circles
+│   │   ├── Fusion_Coordinates_S5.csv       # Corrected arcs for S1
+│   │   ├── Fusion_Coordinates_S6.csv       # Front tooth profile (Z=0)
+│   │   ├── Fusion_Coordinates_S7.csv       # Back tooth profile (Z=17)
+│   │   └── Fusion_Coordinates_S8.csv       # Guide rail data (unused)
 │   │
-│   ├── csv_merged/                      # Preprocessed CSVs
-│   │   ├── Fusion_Coordinates_S1.csv
-│   │   ├── Fusion_Coordinates_S2.csv
-│   │   ├── Fusion_Coordinates_S3.csv
-│   │   ├── Fusion_Coordinates_S4.csv
-│   │   └── Fusion_Coordinates_S5.csv
-│   │
-│   ├── 0_preprocess_csvs.py             # Stage 2: CSV preprocessing
-│   ├── 4_1_Art4Optodisk_build123d.py    # Stage 3: build123d reconstruction (G1–G13)
-│   ├── 4_2_compare_stl_files.py         # Stage 4: STL validation
-│   │
-│   ├── 4_Art4Optodisk_original.stl      # Downloaded from Thor repo
-│   ├── 4_Art4Optodisk_G_1_13.stl        # Our reconstruction
-│   │
-│   ├── 0_preprocess_csvs_summary.txt
-│   ├── 4_Art4Optodisk_summary_G_1_13.txt
-│   └── 4_Art4Optodisk_original_build123d_vs_original_G_1_13.txt
+│   ├── csv_merged/                         # Preprocessed CSVs
+│   ├── 0_preprocess_csvs.py
+│   ├── 5_1_Art4TransmissionColumn_build123d.py  # G1–G16
+│   ├── 5_2_compare_stl_files.py
+│   ├── 5_Art4TransmissionColumn_original.stl
+│   └── 5_Art4TransmissionColumn_G_1_16.stl
 │
 └── ...                                  # Additional parts as identified
 ```
@@ -372,10 +367,10 @@ manifold3d
 python 0_preprocess_csvs.py
 
 # 2. Build the part
-python 4_1_Art4Optodisk_build123d.py
+python 5_1_Art4TransmissionColumn_build123d.py
 
 # 3. Compare against original
-python 4_2_compare_stl_files.py
+python 5_2_compare_stl_files.py
 ```
 
 ---
