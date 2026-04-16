@@ -41,49 +41,9 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 
 The workflow follows a 4-stage pipeline for each part:
 
-# Thor-AssemblyArt4
+Fusion 360 Mesh  →  CSV Extraction  →  build123d Reconstruction  →  STL Validation
+(1)                (2)                    (3)                       (4)
 
-
-
-Parametric reconstruction of the [Thor Open-Source Robot Arm](https://github.com/AngelLM/Thor) assembly parts using **build123d** — a Python CAD kernel built on OpenCascade.
-
-Each part is reverse-engineered from the original Fusion 360 mesh geometry via coordinate extraction, then rebuilt programmatically and validated against the original STL files.
-
----
-
-## Project Overview
-
-| Detail | Info |
-|---|---|
-| **Assigned Repo** | [AngelLM/Thor](https://github.com/AngelLM/Thor) |
-| **Submission Repo** | [Thor-AssemblyArt4](https://github.com/avajones081196/Thor-AssemblyArt4) |
-| **Completion** | 6 parts done |
-| **Method** | Fusion 360 → CSV coordinates → build123d → STL → Validation |
-
----
-
-## Parts Progress
-
-| # | Part Name | Completion | Vol. Diff (%) | Sym. Diff (%) | Time |
-|---|---|---|---|---|---|
-| 1 | Art4BearingFix | ✅ Done | 0.036% | 0.050% | 5 hrs |
-| 2 | Art4BodyBot | ✅ Done | 0.030% | 0.037% | 4 hrs |
-| 3 | Art4BodyFan | ✅ Done | 0.012% | 0.071% | 2 hrs |
-| 4 | Art4Optodisk | ✅ Done | 0.003% | 0.251% | 1.5 hrs |
-| 5 | Art4TransmissionColumn | ✅ Done | 0.428% | N/A* | 6 hrs |
-| 6 | Art4BearingPlug | ✅ Done | 0.784% | 0.913% | 3 hrs |
-
-**Total Time: 21.5 hours**
-
-*\*Symmetric difference could not be computed for Part 5 because the original downloaded STL mesh is not watertight (`Mesh B watertight: False`). This is a property of the source mesh, not the reconstruction.*
-
-*Note: Small volume differences (especially on circular features) are expected because the original STL uses faceted polygon approximations for circles, while build123d uses true mathematical circle geometry — making the reconstruction more geometrically accurate than the source mesh.*
-
----
-
-## Methodology
-
-The workflow follows a 4-stage pipeline for each part:
 
 ```
 Fusion 360 Mesh  →  CSV Extraction  →  build123d Reconstruction  →  STL Validation
