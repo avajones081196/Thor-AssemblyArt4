@@ -41,9 +41,10 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 
 The workflow follows a 4-stage pipeline for each part:
 
+```
 Fusion 360 Mesh  →  CSV Extraction  →  build123d Reconstruction  →  STL Validation
 (1)                (2)                    (3)                       (4)
-
+```
 
 ```
 Fusion 360 Mesh  →  CSV Extraction  →  build123d Reconstruction  →  STL Validation
