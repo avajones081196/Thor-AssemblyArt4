@@ -222,20 +222,6 @@ Compares the build123d STL against the original downloaded from the Thor repo:
 ## Part 1: Art4BearingFix — Results
 
 ```
-
-🟢 EXCELLENT across all metrics
-
-Volume % error:          0.036%
-Symmetric diff % error:  0.050%
-Overlap coverage:        99.99%
-Bounding box:            ✅ PASS (all axes within ±0.1mm)
-
-Watertight mesh:         ✅ 0 free edges
-Solid volume:            880.307 mm³  (original: 879.991 mm³)
-
-```
-
-```
 🟢 EXCELLENT across all metrics
 
 Volume % error:          0.036%
@@ -319,6 +305,22 @@ Note: Volume difference primarily from tapered extrude approximation
 (loft between original and scaled wire) and mesh-vs-circle geometry.
 ```
 
+## Part 7: Art4BearingRing — Results
+
+```
+🟢 EXCELLENT across all metrics 
+
+Volume % error:          0.095%
+Symmetric diff % error:  0.391%
+Overlap coverage:        99.709%
+Bounding box:            ✅ PASS (all axes within ±0.1mm) 
+
+Watertight mesh:         ✅ 0 free edges
+Solid volume:            40,149.255 mm³  (original: 40,187.321 mm³)
+
+```
+
+
 ---
 
 ## Repository Structure
@@ -386,6 +388,15 @@ Thor-AssemblyArt4/
 │   ├── 6_2_compare_stl_files.py
 │   ├── 6_Art4BearingPlug_original.stl
 │   └── 6_Art4BearingPlug_G_1_9.stl
+│
+├── 7_Art4BearingRing/
+│   ├── csv_data_7_Art4BearingRing/
+│   ├── csv_merged/
+│   ├── 0_preprocess_csvs.py
+│   ├── 7_1_Art4BearingRing_build123d.py    # G1–G14
+│   ├── 7_2_compare_stl_files.py
+│   ├── 7_Art4BearingRing_original.stl
+│   └── 7_Art4BearingRing_G_1_14.stl
 │
 └── ...
 ```
