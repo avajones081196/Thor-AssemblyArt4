@@ -12,7 +12,7 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 |---|---|
 | **Assigned Repo** | [AngelLM/Thor](https://github.com/AngelLM/Thor) |
 | **Submission Repo** | [Thor-AssemblyArt4](https://github.com/avajones081196/Thor-AssemblyArt4) |
-| **Completion** | 5 parts done (Art4BearingFix, Art4BodyBot, Art4BodyFan, Art4Optodisk, Art4TransmissionColumn) |
+| **Completion** | 6 parts done |
 | **Method** | Fusion 360 → CSV coordinates → build123d → STL → Validation |
 
 ---
@@ -26,14 +26,13 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 | 3 | Art4BodyFan | ✅ Done | 0.012% | 0.071% | 2 hrs |
 | 4 | Art4Optodisk | ✅ Done | 0.003% | 0.251% | 1.5 hrs |
 | 5 | Art4TransmissionColumn | ✅ Done | 0.428% | N/A* | 6 hrs |
+| 6 | Art4BearingPlug | ✅ Done | 0.784% | 0.913% | 3 hrs |
 
-**Total Time: 18.5 hours**
+**Total Time: 21.5 hours**
 
 *\*Symmetric difference could not be computed for Part 5 because the original downloaded STL mesh is not watertight (`Mesh B watertight: False`). This is a property of the source mesh, not the reconstruction.*
 
 *Note: Small volume differences (especially on circular features) are expected because the original STL uses faceted polygon approximations for circles, while build123d uses true mathematical circle geometry — making the reconstruction more geometrically accurate than the source mesh.*
-
-*Additional parts will be added as they are identified from the Thor assembly.*
 
 ---
 
@@ -58,6 +57,7 @@ A Fusion 360 Python script traverses the mesh body and exports vertex coordinate
 - **Arc profiles** — 3-point arc definitions for curved slot openings
 - **Tooth profiles** — Closed polygon outlines of gear teeth at different Z planes
 - **Revolution profiles** — Line + arc chains on YZ plane for revolve operations
+- **D-shaped profiles** — Line + arc closed loops for loft-cut and tapered extrude operations
 
 ### Stage 2 — CSV Preprocessing (`0_preprocess_csvs.py`)
 
@@ -123,19 +123,19 @@ The reconstruction follows numbered guidelines, each building on the previous. E
 
 | Guideline | Operation | Data Source |
 |---|---|---|
-| G1 | Two 3-point circles at Z=0 → annular ring face (inner R≈21, outer R≈30.2) | S1 |
+| G1 | Two 3-point circles at Z=0 → annular ring face | S1 |
 | G2 | Extrude annular profile 15mm in +Z | S1 |
 | G3 | Watertight check + export STL + summary (deferred to end) | — |
-| G4 | Two 3-point circles at Z=5 → annular groove region (inner R≈21, outer R≈29.2) | S2 |
+| G4 | Two 3-point circles at Z=5 → annular groove region | S2 |
 | G5 | Extrude-cut annular groove 10mm in +Z | S2 |
-| G6 | Two 3-point circles at different Z levels, both centered at (0, 24) | S3 |
-| G7 | Extrude-cut countersink top (R≈2.95 at Z=5) 3mm in −Z | S3 |
-| G8 | Extrude-cut through-hole (R≈1.7 at Z=2) 2mm in −Z | S3 |
-| G9 | Circular pattern: replicate G7+G8 cuts — 4 copies at 90° intervals | S3 |
-| G10 | 4 corner points → rectangle at X≈30.196, YZ plane | S4 |
-| G11 | Extrude-cut rectangle 2mm in −X to make slot (face offset +0.5mm outside body) | S4 |
-| G12 | One 3-point circle at Z=5 → circle face (R≈29.2, centered at origin) | S5 |
-| G13 | Extrude-cut S5 circle profile 16mm in +Z | S5 |
+| G6 | Two 3-point circles at different Z levels | S3 |
+| G7 | Extrude-cut countersink top 3mm in −Z | S3 |
+| G8 | Extrude-cut through-hole 2mm in −Z | S3 |
+| G9 | Circular pattern: 4 copies at 90° intervals | S3 |
+| G10 | 4 corner points → rectangle at X≈30.196 | S4 |
+| G11 | Extrude-cut rectangle 2mm in −X | S4 |
+| G12 | One 3-point circle at Z=5 | S5 |
+| G13 | Extrude-cut S5 circle 16mm in +Z | S5 |
 
 **Part 5 — Art4TransmissionColumn** (`5_1_Art4TransmissionColumn_build123d.py`, G1–G16):
 
@@ -145,46 +145,45 @@ The reconstruction follows numbered guidelines, each building on the previous. E
 | G12 | Read S5 corrected arcs, combine with S1 lines → closed revolution profile | S1, S5 |
 | G2 | Revolve corrected profile 360° about Z axis | S1, S5 |
 | G3 | Watertight check + export STL + summary (deferred to end) | — |
-| G4 | One 3-point circle at Z=76 (top face), center at 45°, dist=24 | S2 |
+| G4 | One 3-point circle at Z=76 (top face) | S2 |
 | G5 | Extrude-cut S2 circle 13mm in −Z | S2 |
 | G6 | Circular pattern of G5 — 4 copies at 90° around Z | S2 |
 | G7 | Four hexagonal line-loop profiles at Z=76 | S3 |
 | G8 | Extrude-cut 4 hexagons 7mm in −Z | S3 |
-| G9 | Two 3-point circles at Z=64 (inner R≈1.7, outer R≈2.95) | S4 |
-| G10 | Extrude-cut inner circle 13mm +Z, outer circle 3mm +Z (countersink) | S4 |
+| G9 | Two 3-point circles at Z=64 (countersink) | S4 |
+| G10 | Extrude-cut inner circle 13mm +Z, outer circle 3mm +Z | S4 |
 | G11 | Circular pattern of G10 — 4 copies at 90° around Z | S4 |
 | G13 | Read S6 — front tooth profile at Z=0 (33-segment closed loop) | S6 |
 | G14 | Read S7 — back tooth profile at Z=17 (36-segment closed loop) | S7 |
 | G15 | Loft S6 → S7 via ruled ThruSections → one gear tooth, boolean-join | S6, S7 |
 | G16 | Circular pattern — 20 teeth at 18° intervals around Z axis | S6, S7 |
 
-**Key design decisions (Part 2):**
-- 3-point circles use **exact circumscribed-circle fitting** (center + radius from 3 sample points) for smooth CAD geometry.
-- Hexagons are drawn from **ordered line-segment chains** snapped into closed loops.
-- Boss cut-solids (G12–G14) are assembled from **triangular faces + polygon caps**, sewn, **normal-oriented** (`BRepLib.OrientClosedSolid_s`), then boolean-cut. Without normal orientation, the cut performs a complement subtraction instead of a true cut.
-- Tilted-plane circle cuts (G15–G16) use **3-D circumcircle computation** (center, radius, plane normal) with `BRepPrimAPI_MakePrism` along the outward normal.
-- Bottom-face circle cuts (G17–G18) use the same OCP prism approach on the flat XY plane at Z=0.
+**Part 6 — Art4BearingPlug** (`6_1_Art4BearingPlug_build123d.py`, G1–G9):
 
-**Key design decisions (Part 3):**
-- S1 profile is a **22-vertex polygon** (discretized arc + straight edges) chained into a closed loop using `order_line_segments()`.
-- S2 rectangle on the YZ plane uses build123d's `Plane.YZ` with `Mode.SUBTRACT` for the cut.
-- S3 arc-slot profile uses **OCP `GC_MakeArcOfCircle`** for 3-point arcs combined with line edges, wired together and prism-extruded via `BRepPrimAPI_MakePrism` along +X.
-- S3 screw holes use **OCP circular prism** extrusion on the YZ plane at X=11.
-
-**Key design decisions (Part 4):**
-- All circles use **exact circumscribed-circle fitting** from 3 sample points for smooth CAD geometry.
-- Annular ring (G1–G2) and annular groove cut (G4–G5) both use `Mode.SUBTRACT` on the inner circle within `BuildSketch` to create clean ring profiles.
-- Countersink screw holes (G6–G9) use a two-depth strategy: wider countersink top (R≈2.95) cut 3mm in −Z first, then narrower through-hole (R≈1.7) cut 2mm deeper — replicated 4× via manual 90° rotation of hole centers.
-- Rectangle slot (G10–G11) uses **OCP `BRepPrimAPI_MakePrism`** directly with a +0.5mm overhang offset so the tool face starts outside the curved wall, eliminating semicircular residual artifacts from flush-face boolean operations.
-- S5 circle cut (G12–G13) uses build123d's `BuildSketch` + `extrude(..., mode=Mode.SUBTRACT)` in +Z, consistent with the annular groove approach in G4–G5.
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Read S1 — circle at X=6.95 (R≈3.6) on YZ plane | S1 |
+| G2 | Extrude circle 3mm in −X → cylinder (X=6.95 to X=3.95) | S1 |
+| G3 | Watertight check + export STL + summary (deferred to end) | — |
+| G4 | Read S1 — circle at X=0 (R≈3.0) on YZ plane | S1 |
+| G5 | Loft X=0 (R=3.0) → X=3.95 (R=3.6), join to cylinder | S1 |
+| G6 | Read S6–S8: three D-shaped profiles at Y=0, Y=−1.978, Y=+1.978 | S6, S7, S8 |
+| G7 | 3-section loft-cut S8→S6→S7 (top→mid→bottom), subtract from body | S6, S7, S8 |
+| G8 | Tapered extrude-cut S8 in +Y, taper=−1.361°, dist=2.3 (top) | S8 |
+| G9 | Tapered extrude-cut S7 in −Y, taper=−1.361°, dist=3.9 (bottom) | S7 |
 
 **Key design decisions (Part 5):**
-- **First revolve-based part**: S1 revolution profile (lines + arcs on YZ plane) is revolved 360° about the Z axis using `BRepPrimAPI_MakeRevol`. Y coordinate = radial distance.
-- S1 arcs were **degenerate/reversed** in the original extraction (arc2 had collinear points at Y=35, arc1 had wrong direction). **G12 reads corrected arcs from S5** and replaces the bad S1 arcs before chaining.
-- Arc chaining uses `order_segments_with_arcs()` which handles mixed line+arc segments, with collinear-arc detection (cross-product magnitude check) to fall back to straight lines for degenerate arcs.
-- **Helical gear teeth** (G13–G16): tooth cross-sections extracted at Z=0 (S6, 33 segments) and Z=17 (S7, 36 segments), then connected via **ruled loft** using `BRepOffsetAPI_ThruSections(isSolid=True, ruled=True)`. Each tooth is boolean-fused to the main body via `BRepAlgoAPI_Fuse`.
-- Circular pattern for teeth: S6/S7 wires are **rotated via `gp_Trsf.SetRotation`** around Z axis at 18° intervals, lofted, and fused — 20 teeth total.
-- Volume difference (0.43%) is primarily from the ruled loft creating flat tooth sides vs the original's curved helical surfaces, plus the mesh-vs-circle approximation difference.
+- **First revolve-based part**: S1 revolution profile revolved 360° about Z using `BRepPrimAPI_MakeRevol`.
+- S1 arcs were degenerate — **G12 reads corrected arcs from S5**.
+- **Helical gear teeth** (G13–G16): ruled loft + circular pattern of 20 teeth.
+- Volume difference (0.43%) from ruled loft approximation + mesh-vs-circle geometry.
+
+**Key design decisions (Part 6):**
+- **Cylinder + lofted cone** body: S1 provides two circles at different X levels. Cylinder extruded in −X, then lofted to smaller circle at X=0.
+- **D-shaped cut profiles**: S6 (Y=0, 9 lines), S7 (Y=−1.978, line+arc), S8 (Y=+1.978, line+arc). Lines and 3-point arcs handled by `build_wire_from_rows()` with `GC_MakeArcOfCircle`.
+- **3-section loft-cut** (G7): `BRepOffsetAPI_ThruSections` through S8→S6→S7 creates the volume between the three D-shaped profiles, then boolean-subtracted.
+- **Tapered extrude** (G8–G9): simulated via loft between original wire and translated+scaled copy. Scale factor = `1 + dist × tan(taper_angle)` where taper = −1.361°. This removes the remaining corner material on top and bottom.
+- Volume difference (0.78%) from tapered extrude approximation via loft scaling.
 
 ### Stage 4 — Validation (`*_compare_stl_files.py`)
 
@@ -264,12 +263,23 @@ Bounding box:            ✅ PASS (all axes within ±0.1mm)
 
 Watertight mesh:         ✅ 0 free edges (1398 faces)
 Solid volume:            78,084.016 mm³  (original: 78,419.464 mm³)
+```
 
-Note: This is the most complex part — includes a 360° revolved body with
-helical gear teeth (20 teeth via ruled loft + circular pattern), 4 screw
-holes, 4 hexagonal bolt pockets, and 4 countersink holes. The 0.43%
-difference is primarily from ruled loft approximation of helical tooth
-surfaces and mesh-vs-circle geometry differences.
+## Part 6: Art4BearingPlug — Results
+
+```
+🟢 EXCELLENT across all metrics
+
+Volume % error:          0.784%
+Symmetric diff % error:  0.913%
+Overlap coverage:        99.94%
+Bounding box:            ✅ PASS (all axes within ±0.1mm)
+
+Watertight mesh:         ✅ 0 free edges (15 faces)
+Solid volume:            239.415 mm³  (original: 237.553 mm³)
+
+Note: Volume difference primarily from tapered extrude approximation
+(loft between original and scaled wire) and mesh-vs-circle geometry.
 ```
 
 ---
@@ -318,24 +328,29 @@ Thor-AssemblyArt4/
 │   └── 4_Art4Optodisk_G_1_13.stl
 │
 ├── 5_Art4TransmissionColumn/
-│   ├── csv_data_5_Art4TransmissionColumn/  # Raw CSVs from Fusion 360
-│   │   ├── Fusion_Coordinates_S1.csv       # Revolution profile (lines + arcs)
-│   │   ├── Fusion_Coordinates_S2.csv       # Screw hole circle
-│   │   ├── Fusion_Coordinates_S3.csv       # Hexagonal profiles
-│   │   ├── Fusion_Coordinates_S4.csv       # Countersink circles
-│   │   ├── Fusion_Coordinates_S5.csv       # Corrected arcs for S1
-│   │   ├── Fusion_Coordinates_S6.csv       # Front tooth profile (Z=0)
-│   │   ├── Fusion_Coordinates_S7.csv       # Back tooth profile (Z=17)
-│   │   └── Fusion_Coordinates_S8.csv       # Guide rail data (unused)
-│   │
-│   ├── csv_merged/                         # Preprocessed CSVs
+│   ├── csv_data_5_Art4TransmissionColumn/
+│   ├── csv_merged/
 │   ├── 0_preprocess_csvs.py
-│   ├── 5_1_Art4TransmissionColumn_build123d.py  # G1–G16
+│   ├── 5_1_Art4TransmissionColumn_build123d.py
 │   ├── 5_2_compare_stl_files.py
 │   ├── 5_Art4TransmissionColumn_original.stl
 │   └── 5_Art4TransmissionColumn_G_1_16.stl
 │
-└── ...                                  # Additional parts as identified
+├── 6_Art4BearingPlug/
+│   ├── csv_data_6_Art4BearingPlug/         # Raw CSVs from Fusion 360
+│   │   ├── Fusion_Coordinates_S1.csv       # Two circles (X=6.95, X=0)
+│   │   ├── Fusion_Coordinates_S6.csv       # Middle D-shape (Y=0, 9 lines)
+│   │   ├── Fusion_Coordinates_S7.csv       # Bottom D-shape (Y=−1.978, line+arc)
+│   │   └── Fusion_Coordinates_S8.csv       # Top D-shape (Y=+1.978, line+arc)
+│   │
+│   ├── csv_merged/                         # Preprocessed CSVs
+│   ├── 0_preprocess_csvs.py
+│   ├── 6_1_Art4BearingPlug_build123d.py    # G1–G9
+│   ├── 6_2_compare_stl_files.py
+│   ├── 6_Art4BearingPlug_original.stl
+│   └── 6_Art4BearingPlug_G_1_9.stl
+│
+└── ...
 ```
 
 ---
@@ -367,10 +382,10 @@ manifold3d
 python 0_preprocess_csvs.py
 
 # 2. Build the part
-python 5_1_Art4TransmissionColumn_build123d.py
+python 6_1_Art4BearingPlug_build123d.py
 
 # 3. Compare against original
-python 5_2_compare_stl_files.py
+python 6_2_compare_stl_files.py
 ```
 
 ---
