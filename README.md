@@ -27,7 +27,7 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 | 4 | Art4Optodisk | ✅ Done | 0.003% | 0.251% | 1.5 hrs |
 | 5 | Art4TransmissionColumn | ✅ Done | 0.428% | N/A* | 6 hrs |
 | 6 | Art4BearingPlug | ✅ Done | 0.784% | 0.913% | 3 hrs |
-| 7 | Art4BearingRing | ✅ Done | 0.095% | 0.391% | 2 hrs |
+| 7 | Art4BearingRing | ✅ Done | 0.0015% | 0.1402% | 2 hrs |
 
 **Total Time: 23.5 hours**
 
@@ -310,8 +310,8 @@ Note: Volume difference primarily from tapered extrude approximation
 ```
 🟢 EXCELLENT across all metrics 
 
-Volume % error:          0.095%
-Symmetric diff % error:  0.391%
+Volume % error:          0.0015%
+Symmetric diff % error:  0.1402%
 Overlap coverage:        99.709%
 Bounding box:            ✅ PASS (all axes within ±0.1mm) 
 
