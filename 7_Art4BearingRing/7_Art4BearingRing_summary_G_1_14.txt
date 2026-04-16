@@ -1,0 +1,92 @@
+=================================================================
+  7_Art4BearingRing — build123d Assembly Script
+  Guidelines: G1 → G14  |  Run: 2026-04-16 13:06:55
+=================================================================
+
+-> [G1] Reading S1 — inner Ø72 and outer Ø100 circles ...
+   S1 circle → centre=(-0.000,0.000), R=36.0000, Z=10.0
+   S1 circle → centre=(0.000,0.000), R=49.9998, Z=10.0
+   → Inner R=36.0000  Outer R=49.9998  Z_top=10.0
+--- [G1] Complete ✓ ---
+
+-> [G2] Extruding annular ring (Ø72.0 bore / Ø100.0 OD) by 10 units in −Z ...
+   ✓ Base ring created. Volume = 37824.1739 mm³
+--- [G2] Complete ✓ ---
+
+-> [G4] Reading S2 — inner Ø80 and outer Ø100 circles for recess ...
+   S2 circle → centre=(-0.000,-0.000), R=40.0000, Z=4.0
+   S2 circle → centre=(-0.000,-0.000), R=49.9998, Z=4.0
+   → Inner R=40.0000  Outer R=49.9998  Z=4.0
+--- [G4] Complete ✓ ---
+
+-> [G5] Extrude-cutting recess annulus (Ø80.0–Ø100.0) 5 units in −Z from Z=4.0 ...
+   ✓ Recess cut done. Volume = 26514.6270 mm³
+--- [G5] Complete ✓ ---
+
+-> [G6] Reading S3 — four bolt-hole circles ...
+   S3 hole → centre=(39.000,22.500), R=1.6999, Z=4.0
+   S3 hole → centre=(39.000,-22.500), R=1.6999, Z=4.0
+   S3 hole → centre=(-39.000,-22.500), R=1.6999, Z=4.0
+   S3 hole → centre=(-39.000,22.500), R=1.6999, Z=4.0
+   → 4 hole(s) detected.
+--- [G6] Complete ✓ ---
+
+-> [G7] Extrude-cutting 4 bolt holes 8 units in +Z ...
+   ✓ Bolt holes cut. Volume = 26296.7621 mm³
+--- [G7] Complete ✓ ---
+
+-> [G8] Reading S4 — four hexagon profiles ...
+   Hexagon 1: 6 vertices at Z=10.0  | first vertex = (35.65, 22.5)
+   Hexagon 2: 6 vertices at Z=10.0  | first vertex = (35.65, -22.5)
+   Hexagon 3: 6 vertices at Z=10.0  | first vertex = (-42.35, -22.5)
+   Hexagon 4: 6 vertices at Z=10.0  | first vertex = (-42.35, 22.5)
+   → 4 hexagon(s) detected.
+--- [G8] Complete ✓ ---
+
+-> [G9] Extrude-cutting 4 hexagon recesses 2.5 units in −Z ...
+   ✓ Hex recesses cut. Volume = 26095.9886 mm³
+--- [G9] Complete ✓ ---
+
+-> [G10] Reading S5 — groove profile (line + arc) ...
+   Line:  A=(36.0, 8.04) → B=(36.0, 1.96)
+   Arc :  (36.0, 1.96) --((38.2, 5.0))--> (36.0, 8.04)
+--- [G10] Complete ✓ ---
+
+-> [G11] Revolve-cutting groove profile 360° about Z axis ...
+   ✓ Groove revolve-cut done. Volume = 23825.1539 mm³
+--- [G11] Complete ✓ ---
+
+-> [G12] Reading S6 — four circle profiles on YZ planes ...
+   S6 circle → X=-50.000, centre_YZ=(0.0005, 4.9995), R=3.7005
+   S6 circle → X=-40.500, centre_YZ=(0.0002, 5.0000), R=3.6998
+   S6 circle → X=-39.807, centre_YZ=(0.0000, 5.0000), R=3.6030
+   S6 circle → X=-38.076, centre_YZ=(0.0006, 5.0000), R=3.3604
+   → 4 circle profiles built.
+--- [G12] Complete ✓ ---
+
+-> [G13] Loft-cutting pairwise (linear profile) through S6 circles ...
+   Lofting segment 1: X=-50.000 to X=-40.500
+   Lofting segment 2: X=-40.500 to X=-39.807
+   Lofting segment 3: X=-39.807 to X=-38.076
+   ✓ Pairwise loft cuts completed. Volume = 23470.0151 mm³
+--- [G13] Complete ✓ ---
+
+-> [G14] Extrude-cutting 12 units in +X using circle-4 profile (X=-38.076) ...
+   ✓ Extrude cut: 12 mm in +X from X=-38.076 | centre_YZ=(0.0006, 5.0000), R=3.3604 mm | Volume = 23448.9227 mm³
+--- [G14] Complete ✓ ---
+
+=================================================================
+  [G3]  PRE-EXPORT CHECKS & STL EXPORT
+=================================================================
+
+-> [G3] Watertight check ...
+   Faces in solid : 46
+   Free edges     : 0
+   🟢 SUCCESS: Mesh is watertight!
+
+   Final volume = 23448.9227 mm³
+   ✓ STL saved  : 7_Art4BearingRing_G_1_14.stl  (3382.7 KB)
+
+=================================================================
+  BUILD COMPLETE — G1 through G14
+=================================================================

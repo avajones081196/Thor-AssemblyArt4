@@ -1,0 +1,93 @@
+
+███████████████████████████████████████████████████████████
+  STL COMPARISON: Build123d  vs  Fusion 360 Original
+  Run time  : 2026-04-16  14:06:45
+███████████████████████████████████████████████████████████
+  Build123d : 7_Art4BearingRing_G_1_14.stl
+  Original  : 7_Art4BearingRing_original.stl
+  Report    : 7_Art4BearingRing_original_build123d_vs_original_G_1_14.txt
+
+  =========================================================
+  Build123d STL
+
+  =========================================================
+  File           : 7_Art4BearingRing_G_1_14.stl
+  Triangles      : 69,276  (more = finer mesh = less approx error)
+  Volume         : 23447.5182 mm³
+  Center of mass : (0.698, 0.000, 6.383) mm
+  X range        : -49.9998 → 49.9998 mm
+  Y range        : -49.9998 → 49.9998 mm
+  Z range        : 0.0000 → 10.0000 mm
+
+  =========================================================
+  Fusion 360 Original STL
+
+  =========================================================
+  File           : 7_Art4BearingRing_original.stl
+  Triangles      : 20,586  (more = finer mesh = less approx error)
+  Volume         : 23447.1641 mm³
+  Center of mass : (0.692, -0.000, 6.383) mm
+  X range        : -50.0000 → 50.0000 mm
+  Y range        : -49.9952 → 49.9952 mm
+  Z range        : -0.0000 → 10.0000 mm
+
+  =========================================================
+  VOLUME COMPARISON
+
+  =========================================================
+  Metric                                   Value  Unit
+  ---------------------------------------------------------
+  Build123d volume                    23447.5182  mm³
+  Fusion volume (reference)           23447.1641  mm³
+  Absolute difference                    +0.3542  mm³  (build123d larger)
+  % error vs original                     0.0015  %
+  Rating                         🟢 EXCELLENT
+
+  =========================================================
+  SYMMETRIC DIFFERENCE  (spatial overlap quality)
+
+  =========================================================
+  Mesh A watertight : True
+  Mesh B watertight : True
+
+  Metric                                     Value  Unit
+  ---------------------------------------------------------
+  Volume A (Build123d)                  23447.0532  mm³
+  Volume B (Fusion original)            23447.0406  mm³
+  Intersection volume                   23430.6104  mm³
+  Overlap coverage (inter/Fusion)          99.9299  %
+  ---------------------------------------------------------
+  Symmetric diff volume                    32.8730  mm³
+  Sym diff % of Fusion volume               0.1402  %
+  Rating                              🟢 EXCELLENT
+
+  =========================================================
+  BOUNDING BOX COMPARISON  (tolerance ±0.1 mm per axis)
+
+  =========================================================
+  Axis      Build123d       Fusion    Diff mm    % err  Status
+  -----------------------------------------------------------------
+  X min      -49.9998     -50.0000    +0.0002   0.000%  ✅ pass
+  X max       49.9998      50.0000    -0.0002   0.000%  ✅ pass
+  Y min      -49.9998     -49.9952    -0.0047   0.005%  ✅ pass
+  Y max       49.9998      49.9952    +0.0047   0.005%  ✅ pass
+  Z min        0.0000      -0.0000    +0.0000   0.000%  ✅ pass
+  Z max       10.0000      10.0000    +0.0000   0.000%  ✅ pass
+
+  Overall bounding box : ✅ PASS
+
+  █████████████████████████████████████████████████████████
+  SUMMARY SCORECARD
+
+  █████████████████████████████████████████████████████████
+  Check                                    Score   Rating
+  -----------------------------------------------------------------
+  Volume % error                          0.002%   🟢 EXCELLENT
+  Symmetric diff % error                  0.140%   🟢 EXCELLENT
+  Overlap coverage                        99.93%   🟢 EXCELLENT
+  Bounding box                              PASS   ✅
+
+  █████████████████████████████████████████████████████████
+
+  Report saved → /Users/avajones/Documents/ava_build123d/20260413_assign/7_Art4BearingRing/7_Art4BearingRing_original_build123d_vs_original_G_1_14.txt
+
