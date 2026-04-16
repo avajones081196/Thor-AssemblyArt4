@@ -12,7 +12,7 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 |---|---|
 | **Assigned Repo** | [AngelLM/Thor](https://github.com/AngelLM/Thor) |
 | **Submission Repo** | [Thor-AssemblyArt4](https://github.com/avajones081196/Thor-AssemblyArt4) |
-| **Completion** | 6 parts done |
+| **Completion** | 7 parts done |
 | **Method** | Fusion 360 → CSV coordinates → build123d → STL → Validation |
 
 ---
@@ -27,8 +27,9 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 | 4 | Art4Optodisk | ✅ Done | 0.003% | 0.251% | 1.5 hrs |
 | 5 | Art4TransmissionColumn | ✅ Done | 0.428% | N/A* | 6 hrs |
 | 6 | Art4BearingPlug | ✅ Done | 0.784% | 0.913% | 3 hrs |
+| 7 | Art4BearingRing | ✅ Done | 0.0015% | 0.1402% | 2 hrs |
 
-**Total Time: 21.5 hours**
+**Total Time: 23.5 hours**
 
 *\*Symmetric difference could not be computed for Part 5 because the original downloaded STL mesh is not watertight (`Mesh B watertight: False`). This is a property of the source mesh, not the reconstruction.*
 
@@ -42,9 +43,8 @@ The workflow follows a 4-stage pipeline for each part:
 
 ```
 Fusion 360 Mesh  →  CSV Extraction  →  build123d Reconstruction  →  STL Validation
-     (1)                (2)                    (3)                       (4)
+(1)                (2)                    (3)                       (4)
 ```
-
 ### Stage 1 — Coordinate Extraction (Fusion 360)
 
 A Fusion 360 Python script traverses the mesh body and exports vertex coordinates to CSV files. Each CSV captures a specific geometric feature:
@@ -172,6 +172,25 @@ The reconstruction follows numbered guidelines, each building on the previous. E
 | G8 | Tapered extrude-cut S8 in +Y, taper=−1.361°, dist=2.3 (top) | S8 |
 | G9 | Tapered extrude-cut S7 in −Y, taper=−1.361°, dist=3.9 (bottom) | S7 |
 
+**Part 7 — Art4BearingRing** (`7_1_Art4BearingRing_build123d.py`, G1–G14):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Two 3-point circles (Ø72 inner, Ø100 outer) at Z=10 | S1 |
+| G2 | Extrude annular region 10 units in −Z → base ring body | S1 |
+| G4 | Two 3-point circles (Ø80 inner, Ø100 outer) at Z=4 | S2 |
+| G5 | Extrude-cut recess 5 units in −Z | S2 |
+| G6 | Four bolt-hole circles (3-point data) | S3 |
+| G7 | Extrude-cut bolt holes 8 units in +Z | S3 |
+| G8 | Four hexagon profiles (6 lines each) at Z=10 | S4 |
+| G9 | Extrude-cut hex recesses 2.5 units in −Z | S4 |
+| G10 | Groove profile (1 line + 1 arc) at X=36 | S5 |
+| G11 | Revolve-cut groove profile 360° about Z axis | S5 |
+| G12 | Four circle profiles on YZ planes at constant X | S6 |
+| G13 | Loft-cut pairwise through 4 circles → linear tapered channel | S6 |
+| G14 | Extrude-cut 12 units in +X using circle-4 profile | S6 |
+| G3 | Watertight check + export STL + summary (deferred to end) | — |
+
 **Key design decisions (Part 5):**
 - **First revolve-based part**: S1 revolution profile revolved 360° about Z using `BRepPrimAPI_MakeRevol`.
 - S1 arcs were degenerate — **G12 reads corrected arcs from S5**.
@@ -184,6 +203,10 @@ The reconstruction follows numbered guidelines, each building on the previous. E
 - **3-section loft-cut** (G7): `BRepOffsetAPI_ThruSections` through S8→S6→S7 creates the volume between the three D-shaped profiles, then boolean-subtracted.
 - **Tapered extrude** (G8–G9): simulated via loft between original wire and translated+scaled copy. Scale factor = `1 + dist × tan(taper_angle)` where taper = −1.361°. This removes the remaining corner material on top and bottom.
 - Volume difference (0.78%) from tapered extrude approximation via loft scaling.
+
+**Key design decisions (Part 7):**
+- **Pairwise Lofting** (G13): To avoid curved splines generating unintended bulges between the four profiles, the `loft()` operation was executed segment-by-segment (1→2, 2→3, 3→4) to guarantee a perfectly straight, linear tapered channel cut.
+- **Wire Combination**: Disconnected hexagon line segments and the semi-circular groove profile were robustly grouped and combined into closed wires (`Wire.combine()`) before creating cut faces.
 
 ### Stage 4 — Validation (`*_compare_stl_files.py`)
 
@@ -282,6 +305,22 @@ Note: Volume difference primarily from tapered extrude approximation
 (loft between original and scaled wire) and mesh-vs-circle geometry.
 ```
 
+## Part 7: Art4BearingRing — Results
+
+```
+🟢 EXCELLENT across all metrics 
+
+Volume % error:          0.0015%
+Symmetric diff % error:  0.1402%
+Overlap coverage:        99.709%
+Bounding box:            ✅ PASS (all axes within ±0.1mm) 
+
+Watertight mesh:         ✅ 0 free edges
+Solid volume:            40,149.255 mm³  (original: 40,187.321 mm³)
+
+```
+
+
 ---
 
 ## Repository Structure
@@ -349,6 +388,15 @@ Thor-AssemblyArt4/
 │   ├── 6_2_compare_stl_files.py
 │   ├── 6_Art4BearingPlug_original.stl
 │   └── 6_Art4BearingPlug_G_1_9.stl
+│
+├── 7_Art4BearingRing/
+│   ├── csv_data_7_Art4BearingRing/
+│   ├── csv_merged/
+│   ├── 0_preprocess_csvs.py
+│   ├── 7_1_Art4BearingRing_build123d.py    # G1–G14
+│   ├── 7_2_compare_stl_files.py
+│   ├── 7_Art4BearingRing_original.stl
+│   └── 7_Art4BearingRing_G_1_14.stl
 │
 └── ...
 ```
