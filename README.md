@@ -221,6 +221,8 @@ Compares the build123d STL against the original downloaded from the Thor repo:
 
 ## Part 1: Art4BearingFix — Results
 
+```
+
 🟢 EXCELLENT across all metrics
 
 Volume % error:          0.036%
@@ -230,6 +232,8 @@ Bounding box:            ✅ PASS (all axes within ±0.1mm)
 
 Watertight mesh:         ✅ 0 free edges
 Solid volume:            880.307 mm³  (original: 879.991 mm³)
+
+```
 
 ```
 🟢 EXCELLENT across all metrics
