@@ -45,11 +45,181 @@ The workflow follows a 4-stage pipeline for each part:
 Fusion 360 Mesh  →  CSV Extraction  →  build123d Reconstruction  →  STL Validation
 (1)                (2)                    (3)                       (4)
 ```
+### Stage 1 — Coordinate Extraction (Fusion 360)
 
-```
-Fusion 360 Mesh  →  CSV Extraction  →  build123d Reconstruction  →  STL Validation
-     (1)                (2)                    (3)                       (4)
-```
+A Fusion 360 Python script traverses the mesh body and exports vertex coordinates to CSV files. Each CSV captures a specific geometric feature:
+
+- **Flat profiles** — Line segments forming closed outlines (base faces)
+- **Triangular faces** — Vertex triplets defining mesh surfaces (top, sides)
+- **Hole boundaries** — Line loops defining hole edges on curved surfaces
+- **Circle profiles** — 3-point circle definitions or polygonal approximations
+- **Hexagonal profiles** — Line-segment loops for bolt/nut pocket cuts
+- **Arc profiles** — 3-point arc definitions for curved slot openings
+- **Tooth profiles** — Closed polygon outlines of gear teeth at different Z planes
+- **Revolution profiles** — Line + arc chains on YZ plane for revolve operations
+- **D-shaped profiles** — Line + arc closed loops for loft-cut and tapered extrude operations
+
+### Stage 2 — CSV Preprocessing (`0_preprocess_csvs.py`)
+
+- Detects and merges split CSV files (e.g., `S2_1.csv`, `S2_2.csv` → `S2.csv`)
+- Removes geometry-aware duplicates (direction-independent lines, rotation-independent triangles)
+- Re-numbers steps sequentially
+- Incremental mode — safe to re-run without reprocessing existing shapes
+
+### Stage 3 — build123d Reconstruction
+
+The reconstruction follows numbered guidelines, each building on the previous. Each part has its own guideline set tailored to the geometry.
+
+**Part 1 — Art4BearingFix** (`1_1_Art4BearingFix_build123d.py`, G1–G9):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Build bottom face from line profile | S1 |
+| G2 | Build top surface triangles + fill holes | S2, S3, S4 |
+| G3 | Build side wall triangles | S5 |
+| G4 | Sew all faces → watertight shell → solid | All above |
+| G5 | Export STL (always last) | — |
+| G6 | Draw circle profiles at Z=0 | S6 |
+| G7 | Extrude-cut S6 circles +4mm in +Z | S6 |
+| G8 | Draw circle profiles at Z=1 | S7 |
+| G9 | Extrude-cut S7 circles +4mm in +Z | S7 |
+
+**Part 2 — Art4BodyBot** (`2_1_Art4BodyBot_build123d.py`, G1–G18):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Two 3-point circles → annular ring profile | S1 |
+| G2 | Extrude annular disc 4.5mm in −Z | S1 |
+| G3 | Checkpoint | — |
+| G4 | Four hexagon profiles from line segments | S2 |
+| G5 | Extrude-cut hexagons 2mm in −Z | S2 |
+| G6 | Four 3-point circle profiles at Z=2.5 | S3 |
+| G7 | Extrude-cut S3 circles 2.5mm in −Z | S3 |
+| G8 | Four 3-point circle profiles at Z=4.5 | S4 |
+| G9 | Extrude-cut S4 circles 4.5mm in −Z | S4 |
+| G10 | Four enclosed line-segment profiles | S5 |
+| G11 | Extrude (join) S5 profiles 10mm in +Z | S5 |
+| G12 | Triangular side faces + top quad lines (4 bosses) | S6 |
+| G13 | Non-planar pentagonal cap loops (fan-triangulated) | S7 |
+| G14 | Sew + orient + boolean-cut 4 boss solids | S6, S7 |
+| G15 | Four 3-point circles on tilted planes | S8 |
+| G16 | Extrude-cut S8 circles 8mm outward-normally | S8 |
+| G17 | Four 3-point circles at Z=0 (flat XY plane) | S9 |
+| G18 | Extrude-cut S9 circles 3mm in +Z | S9 |
+
+**Part 3 — Art4BodyFan** (`3_1_Art4BodyFan_build123d.py`, G1–G7):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Read S1 line segments → enclosed half-box profile at Z=50 | S1 |
+| G2 | Extrude profile 50mm in −Z | S1 |
+| G3 | Export STL + summary (deferred to end) | — |
+| G4 | Read S2 → rectangular profile on YZ plane (X=0) | S2 |
+| G5 | Extrude-cut rectangle 11mm in +X | S2 |
+| G6 | Read S3 → 1 arc-slot + 4 circle profiles at X=11 | S3 |
+| G7 | Extrude-cut S3 profiles 10mm in +X | S3 |
+
+**Part 4 — Art4Optodisk** (`4_1_Art4Optodisk_build123d.py`, G1–G13):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Two 3-point circles at Z=0 → annular ring face | S1 |
+| G2 | Extrude annular profile 15mm in +Z | S1 |
+| G3 | Watertight check + export STL + summary (deferred to end) | — |
+| G4 | Two 3-point circles at Z=5 → annular groove region | S2 |
+| G5 | Extrude-cut annular groove 10mm in +Z | S2 |
+| G6 | Two 3-point circles at different Z levels | S3 |
+| G7 | Extrude-cut countersink top 3mm in −Z | S3 |
+| G8 | Extrude-cut through-hole 2mm in −Z | S3 |
+| G9 | Circular pattern: 4 copies at 90° intervals | S3 |
+| G10 | 4 corner points → rectangle at X≈30.196 | S4 |
+| G11 | Extrude-cut rectangle 2mm in −X | S4 |
+| G12 | One 3-point circle at Z=5 | S5 |
+| G13 | Extrude-cut S5 circle 16mm in +Z | S5 |
+
+**Part 5 — Art4TransmissionColumn** (`5_1_Art4TransmissionColumn_build123d.py`, G1–G16):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Read S1 — 11 lines + 2 arcs on YZ plane (report only, arcs are bad) | S1 |
+| G12 | Read S5 corrected arcs, combine with S1 lines → closed revolution profile | S1, S5 |
+| G2 | Revolve corrected profile 360° about Z axis | S1, S5 |
+| G3 | Watertight check + export STL + summary (deferred to end) | — |
+| G4 | One 3-point circle at Z=76 (top face) | S2 |
+| G5 | Extrude-cut S2 circle 13mm in −Z | S2 |
+| G6 | Circular pattern of G5 — 4 copies at 90° around Z | S2 |
+| G7 | Four hexagonal line-loop profiles at Z=76 | S3 |
+| G8 | Extrude-cut 4 hexagons 7mm in −Z | S3 |
+| G9 | Two 3-point circles at Z=64 (countersink) | S4 |
+| G10 | Extrude-cut inner circle 13mm +Z, outer circle 3mm +Z | S4 |
+| G11 | Circular pattern of G10 — 4 copies at 90° around Z | S4 |
+| G13 | Read S6 — front tooth profile at Z=0 (33-segment closed loop) | S6 |
+| G14 | Read S7 — back tooth profile at Z=17 (36-segment closed loop) | S7 |
+| G15 | Loft S6 → S7 via ruled ThruSections → one gear tooth, boolean-join | S6, S7 |
+| G16 | Circular pattern — 20 teeth at 18° intervals around Z axis | S6, S7 |
+
+**Part 6 — Art4BearingPlug** (`6_1_Art4BearingPlug_build123d.py`, G1–G9):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Read S1 — circle at X=6.95 (R≈3.6) on YZ plane | S1 |
+| G2 | Extrude circle 3mm in −X → cylinder (X=6.95 to X=3.95) | S1 |
+| G3 | Watertight check + export STL + summary (deferred to end) | — |
+| G4 | Read S1 — circle at X=0 (R≈3.0) on YZ plane | S1 |
+| G5 | Loft X=0 (R=3.0) → X=3.95 (R=3.6), join to cylinder | S1 |
+| G6 | Read S6–S8: three D-shaped profiles at Y=0, Y=−1.978, Y=+1.978 | S6, S7, S8 |
+| G7 | 3-section loft-cut S8→S6→S7 (top→mid→bottom), subtract from body | S6, S7, S8 |
+| G8 | Tapered extrude-cut S8 in +Y, taper=−1.361°, dist=2.3 (top) | S8 |
+| G9 | Tapered extrude-cut S7 in −Y, taper=−1.361°, dist=3.9 (bottom) | S7 |
+
+**Part 7 — Art4BearingRing** (`7_1_Art4BearingRing_build123d.py`, G1–G14):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Two 3-point circles (Ø72 inner, Ø100 outer) at Z=10 | S1 |
+| G2 | Extrude annular region 10 units in −Z → base ring body | S1 |
+| G4 | Two 3-point circles (Ø80 inner, Ø100 outer) at Z=4 | S2 |
+| G5 | Extrude-cut recess 5 units in −Z | S2 |
+| G6 | Four bolt-hole circles (3-point data) | S3 |
+| G7 | Extrude-cut bolt holes 8 units in +Z | S3 |
+| G8 | Four hexagon profiles (6 lines each) at Z=10 | S4 |
+| G9 | Extrude-cut hex recesses 2.5 units in −Z | S4 |
+| G10 | Groove profile (1 line + 1 arc) at X=36 | S5 |
+| G11 | Revolve-cut groove profile 360° about Z axis | S5 |
+| G12 | Four circle profiles on YZ planes at constant X | S6 |
+| G13 | Loft-cut pairwise through 4 circles → linear tapered channel | S6 |
+| G14 | Extrude-cut 12 units in +X using circle-4 profile | S6 |
+| G3 | Watertight check + export STL + summary (deferred to end) | — |
+
+**Key design decisions (Part 5):**
+- **First revolve-based part**: S1 revolution profile revolved 360° about Z using `BRepPrimAPI_MakeRevol`.
+- S1 arcs were degenerate — **G12 reads corrected arcs from S5**.
+- **Helical gear teeth** (G13–G16): ruled loft + circular pattern of 20 teeth.
+- Volume difference (0.43%) from ruled loft approximation + mesh-vs-circle geometry.
+
+**Key design decisions (Part 6):**
+- **Cylinder + lofted cone** body: S1 provides two circles at different X levels. Cylinder extruded in −X, then lofted to smaller circle at X=0.
+- **D-shaped cut profiles**: S6 (Y=0, 9 lines), S7 (Y=−1.978, line+arc), S8 (Y=+1.978, line+arc). Lines and 3-point arcs handled by `build_wire_from_rows()` with `GC_MakeArcOfCircle`.
+- **3-section loft-cut** (G7): `BRepOffsetAPI_ThruSections` through S8→S6→S7 creates the volume between the three D-shaped profiles, then boolean-subtracted.
+- **Tapered extrude** (G8–G9): simulated via loft between original wire and translated+scaled copy. Scale factor = `1 + dist × tan(taper_angle)` where taper = −1.361°. This removes the remaining corner material on top and bottom.
+- Volume difference (0.78%) from tapered extrude approximation via loft scaling.
+
+**Key design decisions (Part 7):**
+- **Pairwise Lofting** (G13): To avoid curved splines generating unintended bulges between the four profiles, the `loft()` operation was executed segment-by-segment (1→2, 2→3, 3→4) to guarantee a perfectly straight, linear tapered channel cut.
+- **Wire Combination**: Disconnected hexagon line segments and the semi-circular groove profile were robustly grouped and combined into closed wires (`Wire.combine()`) before creating cut faces.
+
+### Stage 4 — Validation (`*_compare_stl_files.py`)
+
+Compares the build123d STL against the original downloaded from the Thor repo:
+
+- **Volume comparison** — absolute difference + % error
+- **Symmetric difference** — boolean intersection to measure spatial overlap
+- **Bounding box check** — per-axis tolerance ±0.1mm
+- **Summary scorecard** — automatic grading (Excellent / Good / Acceptable / Poor)
+
+---
+
+## Part 1: Art4BearingFix — Results
 
 ### Stage 1 — Coordinate Extraction (Fusion 360)
 
