@@ -1,0 +1,51 @@
+============================================================
+  6_Art4BearingPlug — build123d Assembly Script
+  Guidelines: G1 → G9  |  Run: 2026-04-16 10:13:33
+============================================================
+
+-> [G1] Reading S1 — circles...
+   ✓ X=6.95: R=3.6002
+   ✓ X=0:    R=3.0000
+--- [G1] Complete ✓ ---
+
+-> [G2] Extruding cylinder...
+   ✓ Cylinder (X=6.95→3.95). Volume = 122.1572 mm³
+--- [G2] Complete ✓ ---
+
+-> [G4] Circle at X=0 (R=3.0000)
+--- [G4] Complete ✓ ---
+
+-> [G5] Lofting...
+   ✓ Loft joined. Volume = 257.6724 mm³
+--- [G5] Complete ✓ ---
+
+-> [G6] Reading S6–S8 — three D-shaped profiles...
+   S6 wire (Y=0):      ✓
+   S7 wire (Y=−1.978): ✓
+   S8 wire (Y=+1.978): ✓
+--- [G6] Complete ✓ ---
+
+-> [G7] Loft-cut: S8 → S6 → S7...
+   ✓ Loft-cut solid created. Volume = 12.7648 mm³
+   ✓ Loft-cut done. Volume = 244.9085 mm³
+--- [G7] Complete ✓ ---
+
+-> [G8] Extrude-cut S8 (top) in +Y, taper=-1.361°, dist=2.3...
+   ✓ S8 tapered cut done. Volume = 242.1860 mm³
+--- [G8] Complete ✓ ---
+
+-> [G9] Extrude-cut S7 (bottom) in −Y, taper=-1.361°, dist=3.9...
+   ✓ S7 tapered cut done. Volume = 239.4628 mm³
+--- [G9] Complete ✓ ---
+
+-> [G3] Watertight check before export...
+   Faces in solid : 15
+   Free edges     : 0
+   🟢 SUCCESS: Mesh is watertight!
+
+   Final volume = 239.4628 mm³
+   ✓ Saved: 6_Art4BearingPlug_G_1_9.stl (304.3 KB)
+
+============================================================
+  BUILD COMPLETE — G1 through G9
+============================================================

@@ -1,0 +1,93 @@
+
+███████████████████████████████████████████████████████████
+  STL COMPARISON: Build123d  vs  Fusion 360 Original
+  Run time  : 2026-04-16  10:16:54
+███████████████████████████████████████████████████████████
+  Build123d : 6_Art4BearingPlug_G_1_9.stl
+  Original  : 6_Art4BearingPlug_original.stl
+  Report    : 6_Art4BearingPlug_original_build123d_vs_original_G_1_9.txt
+
+  =========================================================
+  Build123d STL
+
+  =========================================================
+  File           : 6_Art4BearingPlug_G_1_9.stl
+  Triangles      : 6,230  (more = finer mesh = less approx error)
+  Volume         : 239.4147 mm³
+  Center of mass : (3.933, -0.000, -0.000) mm
+  X range        : -0.0000 → 6.9500 mm
+  Y range        : -3.6004 → 3.6000 mm
+  Z range        : -3.6002 → 3.6002 mm
+
+  =========================================================
+  Fusion 360 Original STL
+
+  =========================================================
+  File           : 6_Art4BearingPlug_original.stl
+  Triangles      : 474  (more = finer mesh = less approx error)
+  Volume         : 237.5526 mm³
+  Center of mass : (3.936, 0.000, 0.000) mm
+  X range        : -0.0000 → 6.9500 mm
+  Y range        : -3.6000 → 3.6000 mm
+  Z range        : -3.6000 → 3.6000 mm
+
+  =========================================================
+  VOLUME COMPARISON
+
+  =========================================================
+  Metric                                   Value  Unit
+  ---------------------------------------------------------
+  Build123d volume                      239.4147  mm³
+  Fusion volume (reference)             237.5526  mm³
+  Absolute difference                    +1.8622  mm³  (build123d larger)
+  % error vs original                     0.7839  %
+  Rating                         🟢 EXCELLENT
+
+  =========================================================
+  SYMMETRIC DIFFERENCE  (spatial overlap quality)
+
+  =========================================================
+  Mesh A watertight : True
+  Mesh B watertight : True
+
+  Metric                                     Value  Unit
+  ---------------------------------------------------------
+  Volume A (Build123d)                    239.4145  mm³
+  Volume B (Fusion original)              237.5525  mm³
+  Intersection volume                     237.3994  mm³
+  Overlap coverage (inter/Fusion)          99.9355  %
+  ---------------------------------------------------------
+  Symmetric diff volume                     2.1683  mm³
+  Sym diff % of Fusion volume               0.9128  %
+  Rating                              🟢 EXCELLENT
+
+  =========================================================
+  BOUNDING BOX COMPARISON  (tolerance ±0.1 mm per axis)
+
+  =========================================================
+  Axis      Build123d       Fusion    Diff mm    % err  Status
+  -----------------------------------------------------------------
+  X min       -0.0000      -0.0000    +0.0000   0.000%  ✅ pass
+  X max        6.9500       6.9500    +0.0000   0.000%  ✅ pass
+  Y min       -3.6004      -3.6000    -0.0004   0.005%  ✅ pass
+  Y max        3.6000       3.6000    +0.0000   0.000%  ✅ pass
+  Z min       -3.6002      -3.6000    -0.0002   0.002%  ✅ pass
+  Z max        3.6002       3.6000    +0.0002   0.002%  ✅ pass
+
+  Overall bounding box : ✅ PASS
+
+  █████████████████████████████████████████████████████████
+  SUMMARY SCORECARD
+
+  █████████████████████████████████████████████████████████
+  Check                                    Score   Rating
+  -----------------------------------------------------------------
+  Volume % error                          0.784%   🟢 EXCELLENT
+  Symmetric diff % error                  0.913%   🟢 EXCELLENT
+  Overlap coverage                        99.94%   🟢 EXCELLENT
+  Bounding box                              PASS   ✅
+
+  █████████████████████████████████████████████████████████
+
+  Report saved → /Users/avajones/Documents/ava_build123d/20260413_assign/6_Art4BearingPlug/6_Art4BearingPlug_original_build123d_vs_original_G_1_9.txt
+
