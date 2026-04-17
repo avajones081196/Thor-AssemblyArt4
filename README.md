@@ -27,11 +27,11 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 | 4 | Art4Optodisk | ✅ Done | 0.003% | 0.251% | 1.5 hrs |
 | 5 | Art4TransmissionColumn | ✅ Done | 0.428% | N/A* | 6 hrs |
 | 6 | Art4BearingPlug | ✅ Done | 0.784% | 0.913% | 3 hrs |
-| 7 | Art4BearingRing | ✅ Done | 0.006% | 0.018% | 1.5 hrs |
-| 8 | Art4Body | ✅ Done | 0.058% | 0.375% | 9 hrs |
-| 9 | Art4MotorFix | 🔄 In Progress | - | - | - |
+| 7 | Art4BearingRing | ✅ Done | 0.002% | 0.140% | 1.5 hrs |
+| 8 | Art4Body | ✅ Done | 0.056% | 0.375% | 9 hrs |
+| 9 | Art4MotorFix | 🔄 In Progress | — | — | — |
 
-**Total Time: 23.5 hours**
+**Total Time: 32 hours**
 
 *\*Symmetric difference could not be computed for Part 5 because the original downloaded STL mesh is not watertight (`Mesh B watertight: False`). This is a property of the source mesh, not the reconstruction.*
 
@@ -45,8 +45,9 @@ The workflow follows a 4-stage pipeline for each part:
 
 ```
 Fusion 360 Mesh  →  CSV Extraction  →  build123d Reconstruction  →  STL Validation
-(1)                (2)                    (3)                       (4)
+     (1)                (2)                    (3)                       (4)
 ```
+
 ### Stage 1 — Coordinate Extraction (Fusion 360)
 
 A Fusion 360 Python script traverses the mesh body and exports vertex coordinates to CSV files. Each CSV captures a specific geometric feature:
@@ -193,6 +194,34 @@ The reconstruction follows numbered guidelines, each building on the previous. E
 | G14 | Extrude-cut 12 units in +X using circle-4 profile | S6 |
 | G3 | Watertight check + export STL + summary (deferred to end) | — |
 
+**Part 8 — Art4Body** (`8_1_Art4Body_build123d.py`, G1–G42):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Inner/outer circles → annular ring profile | S1 |
+| G2 | Extrude annular ring 100mm in +Z → base tube | S1 |
+| G4–G5 | Read S2 triangles/trapezoids, extrude-cut 6 profiles 55mm in −Z | S2 |
+| G6–G7 | Read S3 inner profiles, extrude-join 7 profiles 55mm in +Z | S3 |
+| G8–G9 | Read S4 hexagons, symmetrical extrude-cut 51mm both ways | S4 |
+| G10–G11 | Read S5 circles, symmetrical extrude-cut 55mm both ways | S5 |
+| G12–G13 | Read S7 concentric circles, extrude-cut holes (inner/outer) | S7 |
+| G14–G15 | Read S8 concentric circles, extrude-cut holes | S8 |
+| G16–G17 | Read S9 concentric circles, extrude-cut holes | S9 |
+| G18–G19 | Read S10 concentric circles, extrude-cut holes | S10 |
+| G20–G21 | Read S11 exact arcs for dome profile, revolve 180° | S11 |
+| G22–G23 | Read S12 closed arc+line profile, symmetrical extrude-cut 60mm | S12 |
+| G24–G25 | Read S13 6-line profile, extrude-cut 20mm in +Z | S13 |
+| G26–G27 | Read S14 grouped circles, extrude-cut concentric hole pairs | S14 |
+| G28–G29 | Read S15 concentric circle pair, extrude-cut | S15 |
+| G30–G31 | Read S16 single circle, extrude-cut inward | S16 |
+| G32–G33 | Read S17 circle, tapered extrude-join (45.43° taper, 6.5mm in −X) | S17 |
+| G34–G35 | Read S18 hexagons, extrude-cut 4mm in −X | S18 |
+| G36–G37 | Read S19 circle + line/arc profiles, extrude-cut | S19 |
+| G38–G39 | Read S20 rectangles + circles, extrude-cut | S20 |
+| G40–G41 | Read S21 enclosed line+arc profile, extrude-cut 15mm in −Z | S21 |
+| G42 | Mirror G32–G41 operations across global YZ plane | — |
+| G3 | Watertight check + export STL/STEP (deferred to end) | — |
+
 **Key design decisions (Part 5):**
 - **First revolve-based part**: S1 revolution profile revolved 360° about Z using `BRepPrimAPI_MakeRevol`.
 - S1 arcs were degenerate — **G12 reads corrected arcs from S5**.
@@ -203,12 +232,20 @@ The reconstruction follows numbered guidelines, each building on the previous. E
 - **Cylinder + lofted cone** body: S1 provides two circles at different X levels. Cylinder extruded in −X, then lofted to smaller circle at X=0.
 - **D-shaped cut profiles**: S6 (Y=0, 9 lines), S7 (Y=−1.978, line+arc), S8 (Y=+1.978, line+arc). Lines and 3-point arcs handled by `build_wire_from_rows()` with `GC_MakeArcOfCircle`.
 - **3-section loft-cut** (G7): `BRepOffsetAPI_ThruSections` through S8→S6→S7 creates the volume between the three D-shaped profiles, then boolean-subtracted.
-- **Tapered extrude** (G8–G9): simulated via loft between original wire and translated+scaled copy. Scale factor = `1 + dist × tan(taper_angle)` where taper = −1.361°. This removes the remaining corner material on top and bottom.
+- **Tapered extrude** (G8–G9): simulated via loft between original wire and translated+scaled copy. Scale factor = `1 + dist × tan(taper_angle)` where taper = −1.361°.
 - Volume difference (0.78%) from tapered extrude approximation via loft scaling.
 
 **Key design decisions (Part 7):**
 - **Pairwise Lofting** (G13): To avoid curved splines generating unintended bulges between the four profiles, the `loft()` operation was executed segment-by-segment (1→2, 2→3, 3→4) to guarantee a perfectly straight, linear tapered channel cut.
 - **Wire Combination**: Disconnected hexagon line segments and the semi-circular groove profile were robustly grouped and combined into closed wires (`Wire.combine()`) before creating cut faces.
+
+**Key design decisions (Part 8):**
+- **Most complex part** with 42 guidelines, 21 CSV shapes, and the largest volume (227,834 mm³).
+- **180° dome revolve** (G20–G21): mathematically exact arcs (R=50, R=55) revolved using `BRepPrimAPI_MakeRevol` for the dome section.
+- **Tapered extrude-join** (G32–G33): 45.43° taper angle on a circle profile extruded 6.5mm in −X to create the motor mount boss.
+- **Mirror operation** (G42): All features from G32–G41 (one side of the body) mirrored across the global YZ plane to create symmetric geometry, dramatically reducing extraction effort.
+- **STEP export** included alongside STL for CAD interoperability.
+- Volume difference (0.056%) — the lowest among complex parts, demonstrating high accuracy on this 42-guideline build.
 
 ### Stage 4 — Validation (`*_compare_stl_files.py`)
 
@@ -302,26 +339,38 @@ Bounding box:            ✅ PASS (all axes within ±0.1mm)
 
 Watertight mesh:         ✅ 0 free edges (15 faces)
 Solid volume:            239.415 mm³  (original: 237.553 mm³)
-
-Note: Volume difference primarily from tapered extrude approximation
-(loft between original and scaled wire) and mesh-vs-circle geometry.
 ```
 
 ## Part 7: Art4BearingRing — Results
 
 ```
-🟢 EXCELLENT across all metrics 
+🟢 EXCELLENT across all metrics
 
-Volume % error:          0.0015%
-Symmetric diff % error:  0.1402%
-Overlap coverage:        99.709%
-Bounding box:            ✅ PASS (all axes within ±0.1mm) 
+Volume % error:          0.002%
+Symmetric diff % error:  0.140%
+Overlap coverage:        99.93%
+Bounding box:            ✅ PASS (all axes within ±0.1mm)
 
 Watertight mesh:         ✅ 0 free edges
-Solid volume:            40,149.255 mm³  (original: 40,187.321 mm³)
-
+Solid volume:            23,447.518 mm³  (original: 23,447.164 mm³)
 ```
 
+## Part 8: Art4Body — Results
+
+```
+🟢 EXCELLENT across all metrics
+
+Volume % error:          0.056%
+Symmetric diff % error:  0.375%
+Overlap coverage:        99.85%
+Bounding box:            ✅ PASS (all axes within ±0.1mm)
+
+Watertight mesh:         ✅ 0 free edges (303 faces)
+Solid volume:            227,834.042 mm³  (original: 227,706.125 mm³)
+
+Note: Most complex part — 42 guidelines, 21 CSV shapes, 180° dome revolve,
+tapered extrude-join, mirror operation across YZ plane. STEP file also exported.
+```
 
 ---
 
@@ -333,8 +382,8 @@ Thor-AssemblyArt4/
 ├── requirements.txt
 │
 ├── 1_Art4BearingFix/
-│   ├── csv_data_1_Art4BearingFix/       # Raw CSVs from Fusion 360
-│   ├── csv_merged/                      # Preprocessed CSVs
+│   ├── csv_data_1_Art4BearingFix/
+│   ├── csv_merged/
 │   ├── 0_preprocess_csvs.py
 │   ├── 1_1_Art4BearingFix_build123d.py
 │   ├── 1_2_compare_stl_files.py
@@ -378,15 +427,10 @@ Thor-AssemblyArt4/
 │   └── 5_Art4TransmissionColumn_G_1_16.stl
 │
 ├── 6_Art4BearingPlug/
-│   ├── csv_data_6_Art4BearingPlug/         # Raw CSVs from Fusion 360
-│   │   ├── Fusion_Coordinates_S1.csv       # Two circles (X=6.95, X=0)
-│   │   ├── Fusion_Coordinates_S6.csv       # Middle D-shape (Y=0, 9 lines)
-│   │   ├── Fusion_Coordinates_S7.csv       # Bottom D-shape (Y=−1.978, line+arc)
-│   │   └── Fusion_Coordinates_S8.csv       # Top D-shape (Y=+1.978, line+arc)
-│   │
-│   ├── csv_merged/                         # Preprocessed CSVs
+│   ├── csv_data_6_Art4BearingPlug/
+│   ├── csv_merged/
 │   ├── 0_preprocess_csvs.py
-│   ├── 6_1_Art4BearingPlug_build123d.py    # G1–G9
+│   ├── 6_1_Art4BearingPlug_build123d.py
 │   ├── 6_2_compare_stl_files.py
 │   ├── 6_Art4BearingPlug_original.stl
 │   └── 6_Art4BearingPlug_G_1_9.stl
@@ -395,14 +439,15 @@ Thor-AssemblyArt4/
 │   ├── csv_data_7_Art4BearingRing/
 │   ├── csv_merged/
 │   ├── 0_preprocess_csvs.py
-│   ├── 7_1_Art4BearingRing_build123d.py    # G1–G14
+│   ├── 7_1_Art4BearingRing_build123d.py
 │   ├── 7_2_compare_stl_files.py
 │   ├── 7_Art4BearingRing_original.stl
 │   └── 7_Art4BearingRing_G_1_14.stl
-|
+│
 ├── 8_Art4Body/
 │   ├── csv_data_8_Art4Body/
-|   ├── csv_merged/
+│   ├── csv_merged/
+│   ├── 0_preprocess_csvs.py
 │   ├── 8_1_Art4Body_build123d.py           # G1–G42
 │   ├── 8_2_compare_stl_files.py
 │   ├── 8_Art4Body_original.stl
@@ -410,9 +455,7 @@ Thor-AssemblyArt4/
 │   └── 8_Art4Body_G_1_42.step
 │
 └── 9_Art4MotorFix/
-    └── (Currently Working)
-│
-└── ...
+    └── (In Progress)
 ```
 
 ---
@@ -444,10 +487,10 @@ manifold3d
 python 0_preprocess_csvs.py
 
 # 2. Build the part
-python 6_1_Art4BearingPlug_build123d.py
+python 8_1_Art4Body_build123d.py
 
 # 3. Compare against original
-python 6_2_compare_stl_files.py
+python 8_2_compare_stl_files.py
 ```
 
 ---
