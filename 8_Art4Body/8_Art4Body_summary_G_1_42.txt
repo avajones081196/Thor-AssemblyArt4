@@ -1,0 +1,183 @@
+=================================================================
+  8_Art4Body — build123d Assembly Script
+  Guidelines: G1 → G42  |  Run: 2026-04-17 17:17:59
+=================================================================
+
+-> [G1] Reading S1 — inner and outer circle profiles ...
+   → Inner R=49.9998  Outer R=54.9998
+--- [G1] Complete ✓ ---
+
+-> [G2] Extruding annular ring by 100 units in +Z ...
+   ✓ Base tube body created. Volume = 164930.5900 mm³
+--- [G2] Complete ✓ ---
+
+-> [G4] Reading S2 — triangles and trapeziums ...
+
+-> [G5] Extrude-cutting 6 G4 profiles by 55 units in −Z ...
+   ✓ Step cuts completed. Volume = 163980.9896 mm³
+--- [G4 & G5] Complete ✓ ---
+
+-> [G6] Reading S3 — inner closed profiles ...
+
+-> [G7] Extrude-joining 7 G6 profiles by 55 units in +Z ...
+   ✓ Join operation completed. Volume = 183338.5393 mm³
+--- [G6 & G7] Complete ✓ ---
+
+-> [G8] Reading S4 — 4 hexagon profiles ...
+
+-> [G9] Symmetrical extrude-cut (4 profiles, 51 units both ways) ...
+   ✓ Hexagon pockets cut. Volume = 182485.6052 mm³
+--- [G8 & G9] Complete ✓ ---
+
+-> [G10] Reading S5 — 5 circle profiles ...
+
+-> [G11] Symmetrical extrude-cut (55 units both ways) ...
+   ✓ Circular hole patterns cut. Volume = 170832.4616 mm³
+--- [G10 & G11] Complete ✓ ---
+
+-> [G12] Reading Fusion_Coordinates_S7.csv — inner and outer circle profiles ...
+   → Inner R=1.7000 | Outer R=2.9500
+--- [G12] Complete ✓ ---
+
+-> [G13] Extrude-cutting Fusion_Coordinates_S7.csv profiles (Inner inward 5, Outer outward 5) ...
+   ✓ Hole cuts completed. Volume = 170720.7459 mm³
+--- [G13] Complete ✓ ---
+
+-> [G14] Reading Fusion_Coordinates_S8.csv — inner and outer circle profiles ...
+   → Inner R=1.7003 | Outer R=2.9499
+--- [G14] Complete ✓ ---
+
+-> [G15] Extrude-cutting Fusion_Coordinates_S8.csv profiles (Inner inward 5, Outer outward 5) ...
+   ✓ Hole cuts completed. Volume = 170615.8807 mm³
+--- [G15] Complete ✓ ---
+
+-> [G16] Reading Fusion_Coordinates_S9.csv — inner and outer circle profiles ...
+   → Inner R=1.6997 | Outer R=2.9503
+--- [G16] Complete ✓ ---
+
+-> [G17] Extrude-cutting Fusion_Coordinates_S9.csv profiles (Inner inward 5, Outer outward 5) ...
+   ✓ Hole cuts completed. Volume = 170507.6987 mm³
+--- [G17] Complete ✓ ---
+
+-> [G18] Reading Fusion_Coordinates_S10.csv — inner and outer circle profiles ...
+   → Inner R=1.7003 | Outer R=2.9499
+--- [G18] Complete ✓ ---
+
+-> [G19] Extrude-cutting Fusion_Coordinates_S10.csv profiles (Inner inward 5, Outer outward 5) ...
+   ✓ Hole cuts completed. Volume = 170406.2579 mm³
+--- [G19] Complete ✓ ---
+
+-> [G20] Reading S11 — mathematically exact arcs for dome profile ...
+   → Captured 4 profile segments (exact radii 50 & 55).
+--- [G20] Complete ✓ ---
+
+-> [G21] Revolving S11 profile 180° around reference axis ...
+   ✓ 180° mathematically exact dome revolve completed. Volume = 257061.8580 mm³
+--- [G21] Complete ✓ ---
+
+-> [G22] Reading S12 — closed profile (arc + lines) ...
+   → Captured 4 profile segments for cut.
+--- [G22] Complete ✓ ---
+
+-> [G23] Extrude-cutting G22 profile by 60 units symmetrically ...
+   ✓ Symmetrical profile cut completed. Volume = 227680.5976 mm³
+--- [G23] Complete ✓ ---
+
+-> [G24] Reading S13 — 6-line closed profile ...
+   → Captured 1 face(s).
+--- [G24] Complete ✓ ---
+
+-> [G25] Extrude-cutting G24 profile by 20 units in +Z ...
+   ✓ Extrude cut (+Z) completed. Volume = 227239.2066 mm³
+--- [G25] Complete ✓ ---
+
+-> [G26] Reading Fusion_Coordinates_S14.csv — circle profiles ...
+   → Found 4 total circles, formed 2 hole group(s).
+--- [G26] Complete ✓ ---
+
+-> [G27] Extrude-cutting Fusion_Coordinates_S14.csv grouped profiles ...
+      Group 1: Concentric pair (Inner R=1.20, Outer R=2.10)
+      Group 2: Concentric pair (Inner R=1.20, Outer R=2.10)
+   ✓ Advanced hole cuts completed. Volume = 227195.4247 mm³
+--- [G27] Complete ✓ ---
+
+-> [G28] Reading Fusion_Coordinates_S15.csv — circle profiles ...
+   → Found 2 total circles, formed 1 hole group(s).
+--- [G28] Complete ✓ ---
+
+-> [G29] Extrude-cutting Fusion_Coordinates_S15.csv grouped profiles ...
+      Group 1: Concentric pair (Inner R=4.10, Outer R=6.00)
+   ✓ Advanced hole cuts completed. Volume = 226873.2204 mm³
+--- [G29] Complete ✓ ---
+
+-> [G30] Reading Fusion_Coordinates_S16.csv — circle profiles ...
+   → Found 1 total circles, formed 1 hole group(s).
+--- [G30] Complete ✓ ---
+
+-> [G31] Extrude-cutting Fusion_Coordinates_S16.csv grouped profiles ...
+      Group 1: Single inward cut (R=6.00)
+   ✓ Advanced hole cuts completed. Volume = 226809.3788 mm³
+--- [G31] Complete ✓ ---
+
+-> [G32] Reading S17 — circle profile ...
+   → Captured 1 circle(s) from S17.
+--- [G32] Complete ✓ ---
+
+-> [G33] Extruding S17 profile by 6.5 units in -X with expanding 45.43° taper to Join ...
+   ✓ Tapered extrusion (Join) completed. Volume = 230166.0734 mm³
+--- [G33] Complete ✓ ---
+
+-> [G34] Reading S18 — 2 hexagon profiles ...
+   → Captured 2 hexagon face(s).
+--- [G34] Complete ✓ ---
+
+-> [G35] Extrude-cutting G34 profiles by 4 units in -X direction ...
+   ✓ Hexagon extrude-cut completed. Volume = 229948.5941 mm³
+--- [G35] Complete ✓ ---
+
+-> [G36] Reading S19 — circle and line/arc profiles ...
+   → Captured 1 circle(s) and 4 line/arc segments.
+--- [G36] Complete ✓ ---
+
+-> [G37] Extrude-cutting S19 profiles ...
+   → Volume after G37 = 227906.0489 mm³
+--- [G37] Complete ✓ ---
+
+-> [G38] Reading S20 — rectangular profile and circles ...
+   → Captured 2 circle(s) and 1 rectangular face(s).
+--- [G38] Complete ✓ ---
+
+-> [G39] Extrude-cutting S20 profiles ...
+   → Volume after G39 = 227573.9534 mm³
+--- [G39] Complete ✓ ---
+
+-> [G40] Reading S21 — enclosed profile (lines + arc) ...
+   → Captured 8 segments for S21 profile.
+--- [G40] Complete ✓ ---
+
+-> [G41] Extrude-cutting G40 profile by 15 units in -Z direction ...
+   ✓ S21 extrude-cut completed. Volume = 227363.7225 mm³
+--- [G41] Complete ✓ ---
+
+-> [G42] Mirroring G32-G41 operations across global YZ plane ...
+   ✓ Mirrored 1 addition(s).
+   ✓ Mirrored 6 cut(s).
+   → Volume after G42 = 227918.1467 mm³
+--- [G42] Complete ✓ ---
+
+=================================================================
+  [G3]  PRE-EXPORT CHECKS & STL/STEP EXPORT
+=================================================================
+
+-> [G3] Watertight check ...
+   Faces in solid : 303
+   Free edges     : 0
+   🟢 SUCCESS: Mesh is watertight!
+
+   Final volume = 227918.1467 mm³
+   ✓ STL saved  : 8_Art4Body_G_1_42.stl  (3170.3 KB)
+   ✓ STEP saved : 8_Art4Body_G_1_42.step  (1871.0 KB)
+
+=================================================================
+  BUILD COMPLETE — G1 through G42
+=================================================================
