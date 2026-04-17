@@ -12,8 +12,8 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 |---|---|
 | **Assigned Repo** | [AngelLM/Thor](https://github.com/AngelLM/Thor) |
 | **Submission Repo** | [Thor-AssemblyArt4](https://github.com/avajones081196/Thor-AssemblyArt4) |
-| **Completion** | 7 parts done |
-| **Method** | Fusion 360 → CSV coordinates → build123d → STL → Validation |
+| **Completion** | 8 parts done, 1 in progress |
+| **Method** | Fusion 360 → CSV coordinates → build123d → STL/STEP → Validation |
 
 ---
 
@@ -27,7 +27,9 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 | 4 | Art4Optodisk | ✅ Done | 0.003% | 0.251% | 1.5 hrs |
 | 5 | Art4TransmissionColumn | ✅ Done | 0.428% | N/A* | 6 hrs |
 | 6 | Art4BearingPlug | ✅ Done | 0.784% | 0.913% | 3 hrs |
-| 7 | Art4BearingRing | ✅ Done | 0.0015% | 0.1402% | 2 hrs |
+| 7 | Art4BearingRing | ✅ Done | 0.006% | 0.018% | 1.5 hrs |
+| 8 | Art4Body | ✅ Done | 0.058% | 0.375% | 9 hrs |
+| 9 | Art4MotorFix | 🔄 In Progress | - | - | - |
 
 **Total Time: 23.5 hours**
 
@@ -397,6 +399,18 @@ Thor-AssemblyArt4/
 │   ├── 7_2_compare_stl_files.py
 │   ├── 7_Art4BearingRing_original.stl
 │   └── 7_Art4BearingRing_G_1_14.stl
+|
+├── 8_Art4Body/
+│   ├── csv_data_8_Art4Body/
+|   ├── csv_merged/
+│   ├── 8_1_Art4Body_build123d.py           # G1–G42
+│   ├── 8_2_compare_stl_files.py
+│   ├── 8_Art4Body_original.stl
+│   ├── 8_Art4Body_G_1_42.stl
+│   └── 8_Art4Body_G_1_42.step
+│
+└── 9_Art4MotorFix/
+    └── (Currently Working)
 │
 └── ...
 ```
