@@ -12,7 +12,7 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 |---|---|
 | **Assigned Repo** | [AngelLM/Thor](https://github.com/AngelLM/Thor) |
 | **Submission Repo** | [Thor-AssemblyArt4](https://github.com/avajones081196/Thor-AssemblyArt4) |
-| **Completion** | 8 parts done, 1 in progress |
+| **Completion** | 9 parts done, 1 in progress |
 | **Method** | Fusion 360 → CSV coordinates → build123d → STL/STEP → Validation |
 
 ---
@@ -29,9 +29,10 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 | 6 | Art4BearingPlug | ✅ Done | 0.784% | 0.913% | 3 hrs |
 | 7 | Art4BearingRing | ✅ Done | 0.002% | 0.140% | 1.5 hrs |
 | 8 | Art4Body | ✅ Done | 0.056% | 0.375% | 9 hrs |
-| 9 | Art4MotorFix | 🔄 In Progress | — | — | — |
+| 9 | Art4MotorFix | ✅ Done | 0.465% | 0.544% | 1.5 hrs |
+| 10 | Art4MotorGear | 🔄 In Progress | — | — | — |
 
-**Total Time: 32 hours**
+**Total Time: 33.5 hours**
 
 *\*Symmetric difference could not be computed for Part 5 because the original downloaded STL mesh is not watertight (`Mesh B watertight: False`). This is a property of the source mesh, not the reconstruction.*
 
@@ -222,6 +223,18 @@ The reconstruction follows numbered guidelines, each building on the previous. E
 | G42 | Mirror G32–G41 operations across global YZ plane | — |
 | G3 | Watertight check + export STL/STEP (deferred to end) | — |
 
+**Part 9 — Art4MotorFix** (`9_1_Art4MotorFix_build123d.py`, G1–G7):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Read S1 — closed chamfered rectangle + 5 inner circles | S1 |
+| G2 | Extrude enclosed profile (minus circles) 3mm in +Z → base plate with 5 holes | S1 |
+| G3 | Watertight check + export STL/STEP (deferred to end) | — |
+| G4 | Read S2 — outer rectangle + 2 inner rectangles | S2 |
+| G5 | Extrude S2 region (minus inner rectangles) 5mm in +Z → raised wall with rectangular holes | S2 |
+| G6 | Read S3 — 2 side circle profiles | S3 |
+| G7 | Extrude-cut S3 circles through-all in −X direction | S3 |
+
 **Key design decisions (Part 5):**
 - **First revolve-based part**: S1 revolution profile revolved 360° about Z using `BRepPrimAPI_MakeRevol`.
 - S1 arcs were degenerate — **G12 reads corrected arcs from S5**.
@@ -246,6 +259,12 @@ The reconstruction follows numbered guidelines, each building on the previous. E
 - **Mirror operation** (G42): All features from G32–G41 (one side of the body) mirrored across the global YZ plane to create symmetric geometry, dramatically reducing extraction effort.
 - **STEP export** included alongside STL for CAD interoperability.
 - Volume difference (0.056%) — the lowest among complex parts, demonstrating high accuracy on this 42-guideline build.
+
+**Key design decisions (Part 9):**
+- **Chamfered rectangle base** (G1–G2): S1 contains a closed polygon (chamfered rectangle) with 5 inner circles. The profile is extruded with circles subtracted to create a base plate with through-holes in one operation.
+- **Raised wall with rectangular cutouts** (G4–G5): S2 defines an outer rectangle with 2 inner rectangles. Extruded as a region-minus-holes to create the raised wall section.
+- **Side holes** (G6–G7): S3 circles extruded through-all in −X for lateral mounting holes.
+- **STEP export** included alongside STL.
 
 ### Stage 4 — Validation (`*_compare_stl_files.py`)
 
@@ -372,6 +391,20 @@ Note: Most complex part — 42 guidelines, 21 CSV shapes, 180° dome revolve,
 tapered extrude-join, mirror operation across YZ plane. STEP file also exported.
 ```
 
+## Part 9: Art4MotorFix — Results
+
+```
+🟢 EXCELLENT across all metrics
+
+Volume % error:          0.465%
+Symmetric diff % error:  0.544%
+Overlap coverage:        99.96%
+Bounding box:            ✅ PASS (all axes within ±0.1mm)
+
+Watertight mesh:         ✅ 0 free edges (33 faces)
+Solid volume:            3,787.859 mm³  (original: 3,770.317 mm³)
+```
+
 ---
 
 ## Repository Structure
@@ -448,13 +481,23 @@ Thor-AssemblyArt4/
 │   ├── csv_data_8_Art4Body/
 │   ├── csv_merged/
 │   ├── 0_preprocess_csvs.py
-│   ├── 8_1_Art4Body_build123d.py           # G1–G42
+│   ├── 8_1_Art4Body_build123d.py
 │   ├── 8_2_compare_stl_files.py
 │   ├── 8_Art4Body_original.stl
 │   ├── 8_Art4Body_G_1_42.stl
 │   └── 8_Art4Body_G_1_42.step
 │
-└── 9_Art4MotorFix/
+├── 9_Art4MotorFix/
+│   ├── csv_data_9_Art4MotorFix/
+│   ├── csv_merged/
+│   ├── 0_preprocess_csvs.py
+│   ├── 9_1_Art4MotorFix_build123d.py       # G1–G7
+│   ├── 9_2_compare_stl_files.py
+│   ├── 9_Art4MotorFix_original.stl
+│   ├── 9_Art4MotorFix_G_1_7.stl
+│   └── 9_Art4MotorFix_G_1_7.step
+│
+└── 10_Art4MotorGear/
     └── (In Progress)
 ```
 
@@ -487,10 +530,10 @@ manifold3d
 python 0_preprocess_csvs.py
 
 # 2. Build the part
-python 8_1_Art4Body_build123d.py
+python 9_1_Art4MotorFix_build123d.py
 
 # 3. Compare against original
-python 8_2_compare_stl_files.py
+python 9_2_compare_stl_files.py
 ```
 
 ---
