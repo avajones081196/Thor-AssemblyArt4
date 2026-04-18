@@ -1,0 +1,45 @@
+=================================================================
+  9_Art4MotorFix — build123d Assembly Script
+  Guidelines: G1 → G7  |  Run: 2026-04-18 10:34:42
+=================================================================
+
+-> [G1] Reading S1 — closed chamfered rectangle and 5 circles ...
+   → Captured 1 outer polygon(s) and 5 inner circle(s).
+--- [G1] Complete ✓ ---
+
+-> [G2] Extruding enclosed profile except circles by 3 units in +Z ...
+   ✓ Base plate with 5 holes created. Volume = 3498.0093 mm³
+--- [G2] Complete ✓ ---
+
+-> [G4] Reading S2 — two inner rectangles inside an outer rectangle ...
+   → Captured 3 rectangular profile(s).
+--- [G4] Complete ✓ ---
+
+-> [G5] Extruding the entire S2 region EXCEPT inner rectangles by 5 units in +Z ...
+   ✓ Raised wall section with rectangular holes created. Volume = 3824.0093 mm³
+--- [G5] Complete ✓ ---
+
+-> [G6] Reading S3 — side circle profiles ...
+   → Captured 2 side circle(s).
+--- [G6] Complete ✓ ---
+
+-> [G7] Extrude-cutting S3 circles through all in the -X direction ...
+   ✓ Side holes cut successfully. Volume = 3787.6985 mm³
+--- [G7] Complete ✓ ---
+
+=================================================================
+  [G3]  PRE-EXPORT CHECKS & STL/STEP EXPORT
+=================================================================
+
+-> [G3] Watertight check ...
+   Faces in solid : 33
+   Free edges     : 0
+   🟢 SUCCESS: Mesh is watertight!
+
+   Final volume = 3787.6985 mm³
+   ✓ STL saved  : 9_Art4MotorFix_G_1_7.stl  (448.5 KB)
+   ✓ STEP saved : 9_Art4MotorFix_G_1_7.step  (106.5 KB)
+
+=================================================================
+  BUILD COMPLETE — G1 through G7
+=================================================================
