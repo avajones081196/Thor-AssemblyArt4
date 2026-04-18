@@ -1,0 +1,74 @@
+=================================================================
+  10_Art4MotorGear — build123d Assembly Script
+  Guidelines: G1 → G15  |  Run: 2026-04-18 14:57:27
+=================================================================
+
+-> [G1] Reading S1 — inner/outer circles and tooth profile ...
+   → Captured Outer R=6.75, Inner R=2.50, and 1 Tooth Profile.
+--- [G1] Complete ✓ ---
+
+-> [G2] Extruding hub region by 13 units in -Z ...
+   ✓ Gear Hub created. Volume = 1605.6623 mm³
+--- [G2] Complete ✓ ---
+
+-> [G4] Reading S2 — Sweep path definition ...
+   → Sweep path height identified (13.0 mm).
+--- [G4] Complete ✓ ---
+
+-> [G5] Generating mathematically perfect twisted helical sweep ...
+   → Angle: +46.835 deg  |  Generating 60 interpolation frames to prevent deviation
+   ✓ Single twisted tooth solid generated.
+--- [G5] Complete ✓ ---
+
+-> [G6] Circular patterning the tooth 10 times around the hub ...
+   ✓ Pattern merged into hub. Volume = 2880.6804 mm³
+--- [G6] Complete ✓ ---
+
+-> [G7] Reading S3 — Base flange circle profile ...
+--- [G7] Complete ✓ ---
+
+-> [G8] Extruding base flange by 10 units in -Z ...
+   ✓ Base flange appended. Volume = 7404.4411 mm³
+--- [G8] Complete ✓ ---
+
+-> [G9] Reading S4 — Inner and outer side holes ...
+   → Captured Outer R=2.95, Inner R=1.70.
+--- [G9] Complete ✓ ---
+
+-> [G10] Extrude-cutting outer side circle through all in -X ...
+--- [G10] Complete ✓ ---
+
+-> [G11] Extrude-cutting inner side circle by 9 units in +X ...
+   ✓ Side holes cut. Volume = 7243.1688 mm³
+--- [G11] Complete ✓ ---
+
+-> [G12] Reading S5 — Side wedge profile ...
+--- [G12] Complete ✓ ---
+
+-> [G13] Extrude-cutting wedge symmetrically (3 units total length) ...
+   ✓ Slotted wedge cut successfully. Volume = 7130.9363 mm³
+--- [G13] Complete ✓ ---
+
+-> [G14] Reading S6 — Center hole profile ...
+--- [G14] Complete ✓ ---
+
+-> [G15] Extrude-cutting center hole by 11 units in +Z ...
+   ✓ Center clearance hole cut. Volume = 6955.8840 mm³
+--- [G15] Complete ✓ ---
+
+=================================================================
+  [G3]  PRE-EXPORT CHECKS & STL/STEP EXPORT
+=================================================================
+
+-> [G3] Watertight check ...
+   Faces in solid : 26425
+   Free edges     : 0
+   🟢 SUCCESS: Mesh is watertight!
+
+   Final volume = 6955.8840 mm³
+   ✓ STL saved  : 10_Art4MotorGear_G_1_15.stl  (4181.1 KB)
+   ✓ STEP saved : 10_Art4MotorGear_G_1_15.step  (85412.2 KB)
+
+=================================================================
+  BUILD COMPLETE — G1 through G15
+=================================================================

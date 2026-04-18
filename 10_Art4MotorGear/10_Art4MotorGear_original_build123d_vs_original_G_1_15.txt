@@ -1,0 +1,93 @@
+
+███████████████████████████████████████████████████████████
+  STL COMPARISON: Build123d  vs  Fusion 360 Original
+  Run time  : 2026-04-18  15:11:19
+███████████████████████████████████████████████████████████
+  Build123d : 10_Art4MotorGear_G_1_15.stl
+  Original  : 10_Art4MotorGear_original.stl
+  Report    : 10_Art4MotorGear_original_build123d_vs_original_G_1_15.txt
+
+  =========================================================
+  Build123d STL
+
+  =========================================================
+  File           : 10_Art4MotorGear_G_1_15.stl
+  Triangles      : 85,628  (more = finer mesh = less approx error)
+  Volume         : 6955.1641 mm³
+  Center of mass : (0.266, 0.000, -0.226) mm
+  X range        : -11.9998 → 11.9998 mm
+  Y range        : -11.9998 → 11.9998 mm
+  Z range        : -10.0000 → 13.0000 mm
+
+  =========================================================
+  Fusion 360 Original STL
+
+  =========================================================
+  File           : 10_Art4MotorGear_original.stl
+  Triangles      : 10,236  (more = finer mesh = less approx error)
+  Volume         : 6935.3118 mm³
+  Center of mass : (0.270, -0.000, -0.243) mm
+  X range        : -12.0000 → 12.0000 mm
+  Y range        : -11.9963 → 11.9963 mm
+  Z range        : -10.0000 → 13.0018 mm
+
+  =========================================================
+  VOLUME COMPARISON
+
+  =========================================================
+  Metric                                   Value  Unit
+  ---------------------------------------------------------
+  Build123d volume                     6955.1641  mm³
+  Fusion volume (reference)            6935.3118  mm³
+  Absolute difference                   +19.8522  mm³  (build123d larger)
+  % error vs original                     0.2862  %
+  Rating                         🟢 EXCELLENT
+
+  =========================================================
+  SYMMETRIC DIFFERENCE  (spatial overlap quality)
+
+  =========================================================
+  Mesh A watertight : True
+  Mesh B watertight : True
+
+  Metric                                     Value  Unit
+  ---------------------------------------------------------
+  Volume A (Build123d)                   6955.2441  mm³
+  Volume B (Fusion original)             6935.3498  mm³
+  Intersection volume                    6932.4523  mm³
+  Overlap coverage (inter/Fusion)          99.9582  %
+  ---------------------------------------------------------
+  Symmetric diff volume                    25.6894  mm³
+  Sym diff % of Fusion volume               0.3704  %
+  Rating                              🟢 EXCELLENT
+
+  =========================================================
+  BOUNDING BOX COMPARISON  (tolerance ±0.1 mm per axis)
+
+  =========================================================
+  Axis      Build123d       Fusion    Diff mm    % err  Status
+  -----------------------------------------------------------------
+  X min      -11.9998     -12.0000    +0.0002   0.001%  ✅ pass
+  X max       11.9998      12.0000    -0.0002   0.001%  ✅ pass
+  Y min      -11.9998     -11.9963    -0.0036   0.015%  ✅ pass
+  Y max       11.9998      11.9963    +0.0036   0.015%  ✅ pass
+  Z min      -10.0000     -10.0000    +0.0000   0.000%  ✅ pass
+  Z max       13.0000      13.0018    -0.0018   0.008%  ✅ pass
+
+  Overall bounding box : ✅ PASS
+
+  █████████████████████████████████████████████████████████
+  SUMMARY SCORECARD
+
+  █████████████████████████████████████████████████████████
+  Check                                    Score   Rating
+  -----------------------------------------------------------------
+  Volume % error                          0.286%   🟢 EXCELLENT
+  Symmetric diff % error                  0.370%   🟢 EXCELLENT
+  Overlap coverage                        99.96%   🟢 EXCELLENT
+  Bounding box                              PASS   ✅
+
+  █████████████████████████████████████████████████████████
+
+  Report saved → /Users/avajones/Documents/ava_build123d/20260413_assign/10_Art4MotorGear/10_Art4MotorGear_original_build123d_vs_original_G_1_15.txt
+
