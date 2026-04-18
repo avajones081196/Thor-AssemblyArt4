@@ -12,7 +12,7 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 |---|---|
 | **Assigned Repo** | [AngelLM/Thor](https://github.com/AngelLM/Thor) |
 | **Submission Repo** | [Thor-AssemblyArt4](https://github.com/avajones081196/Thor-AssemblyArt4) |
-| **Completion** | 9 parts done, 1 in progress |
+| **Completion** | 10 parts done, assembly in progress |
 | **Method** | Fusion 360 → CSV coordinates → build123d → STL/STEP → Validation |
 
 ---
@@ -30,9 +30,10 @@ Each part is reverse-engineered from the original Fusion 360 mesh geometry via c
 | 7 | Art4BearingRing | ✅ Done | 0.002% | 0.140% | 1.5 hrs |
 | 8 | Art4Body | ✅ Done | 0.056% | 0.375% | 9 hrs |
 | 9 | Art4MotorFix | ✅ Done | 0.465% | 0.544% | 1.5 hrs |
-| 10 | Art4MotorGear | 🔄 In Progress | — | — | — |
+| 10 | Art4MotorGear | ✅ Done | 0.286% | 0.370% | 3 hrs |
+| — | Assembly | 🔄 In Progress | — | — | — |
 
-**Total Time: 33.5 hours**
+**Total Time: 36.5 hours**
 
 *\*Symmetric difference could not be computed for Part 5 because the original downloaded STL mesh is not watertight (`Mesh B watertight: False`). This is a property of the source mesh, not the reconstruction.*
 
@@ -235,6 +236,26 @@ The reconstruction follows numbered guidelines, each building on the previous. E
 | G6 | Read S3 — 2 side circle profiles | S3 |
 | G7 | Extrude-cut S3 circles through-all in −X direction | S3 |
 
+**Part 10 — Art4MotorGear** (`10_1_Art4MotorGear.py`, G1–G15):
+
+| Guideline | Operation | Data Source |
+|---|---|---|
+| G1 | Read S1 — outer/inner circles + tooth profile | S1 |
+| G2 | Extrude hub region 13mm in −Z | S1 |
+| G3 | Watertight check + export STL/STEP (deferred to end) | — |
+| G4 | Read S2 — sweep path definition (height 13mm) | S2 |
+| G5 | Generate mathematically perfect twisted helical sweep (+46.835°, 60 interpolation frames) | S1, S2 |
+| G6 | Circular pattern tooth 10 times around hub | S1 |
+| G7 | Read S3 — base flange circle profile | S3 |
+| G8 | Extrude base flange 10mm in −Z, join to hub | S3 |
+| G9 | Read S4 — inner/outer side hole circles (R=1.70, R=2.95) | S4 |
+| G10 | Extrude-cut outer side circle through-all in −X | S4 |
+| G11 | Extrude-cut inner side circle 9mm in +X | S4 |
+| G12 | Read S5 — side wedge profile | S5 |
+| G13 | Extrude-cut wedge symmetrically (3mm total) | S5 |
+| G14 | Read S6 — center hole profile | S6 |
+| G15 | Extrude-cut center hole 11mm in +Z | S6 |
+
 **Key design decisions (Part 5):**
 - **First revolve-based part**: S1 revolution profile revolved 360° about Z using `BRepPrimAPI_MakeRevol`.
 - S1 arcs were degenerate — **G12 reads corrected arcs from S5**.
@@ -242,29 +263,33 @@ The reconstruction follows numbered guidelines, each building on the previous. E
 - Volume difference (0.43%) from ruled loft approximation + mesh-vs-circle geometry.
 
 **Key design decisions (Part 6):**
-- **Cylinder + lofted cone** body: S1 provides two circles at different X levels. Cylinder extruded in −X, then lofted to smaller circle at X=0.
-- **D-shaped cut profiles**: S6 (Y=0, 9 lines), S7 (Y=−1.978, line+arc), S8 (Y=+1.978, line+arc). Lines and 3-point arcs handled by `build_wire_from_rows()` with `GC_MakeArcOfCircle`.
-- **3-section loft-cut** (G7): `BRepOffsetAPI_ThruSections` through S8→S6→S7 creates the volume between the three D-shaped profiles, then boolean-subtracted.
-- **Tapered extrude** (G8–G9): simulated via loft between original wire and translated+scaled copy. Scale factor = `1 + dist × tan(taper_angle)` where taper = −1.361°.
-- Volume difference (0.78%) from tapered extrude approximation via loft scaling.
+- **Cylinder + lofted cone** body: S1 provides two circles at different X levels.
+- **3-section loft-cut** (G7): `BRepOffsetAPI_ThruSections` through S8→S6→S7 for D-shaped cuts.
+- **Tapered extrude** (G8–G9): simulated via loft between original wire and translated+scaled copy.
 
 **Key design decisions (Part 7):**
-- **Pairwise Lofting** (G13): To avoid curved splines generating unintended bulges between the four profiles, the `loft()` operation was executed segment-by-segment (1→2, 2→3, 3→4) to guarantee a perfectly straight, linear tapered channel cut.
-- **Wire Combination**: Disconnected hexagon line segments and the semi-circular groove profile were robustly grouped and combined into closed wires (`Wire.combine()`) before creating cut faces.
+- **Pairwise Lofting** (G13): segment-by-segment loft to guarantee straight, linear tapered channel.
+- **Wire Combination**: disconnected segments grouped and combined via `Wire.combine()`.
 
 **Key design decisions (Part 8):**
 - **Most complex part** with 42 guidelines, 21 CSV shapes, and the largest volume (227,834 mm³).
-- **180° dome revolve** (G20–G21): mathematically exact arcs (R=50, R=55) revolved using `BRepPrimAPI_MakeRevol` for the dome section.
-- **Tapered extrude-join** (G32–G33): 45.43° taper angle on a circle profile extruded 6.5mm in −X to create the motor mount boss.
-- **Mirror operation** (G42): All features from G32–G41 (one side of the body) mirrored across the global YZ plane to create symmetric geometry, dramatically reducing extraction effort.
+- **180° dome revolve** (G20–G21): mathematically exact arcs revolved for the dome section.
+- **Tapered extrude-join** (G32–G33): 45.43° taper for motor mount boss.
+- **Mirror operation** (G42): G32–G41 mirrored across global YZ plane.
 - **STEP export** included alongside STL for CAD interoperability.
-- Volume difference (0.056%) — the lowest among complex parts, demonstrating high accuracy on this 42-guideline build.
 
 **Key design decisions (Part 9):**
-- **Chamfered rectangle base** (G1–G2): S1 contains a closed polygon (chamfered rectangle) with 5 inner circles. The profile is extruded with circles subtracted to create a base plate with through-holes in one operation.
-- **Raised wall with rectangular cutouts** (G4–G5): S2 defines an outer rectangle with 2 inner rectangles. Extruded as a region-minus-holes to create the raised wall section.
-- **Side holes** (G6–G7): S3 circles extruded through-all in −X for lateral mounting holes.
-- **STEP export** included alongside STL.
+- **Chamfered rectangle base** with 5 inner circles subtracted in one extrude operation.
+- **Raised wall with rectangular cutouts** from region-minus-holes extrusion.
+- **Side holes** extruded through-all for lateral mounting.
+
+**Key design decisions (Part 10):**
+- **Helical gear with mathematically perfect twisted sweep** (G5): +46.835° twist angle generated using 60 interpolation frames to prevent any deviation from the ideal helical path.
+- **10-tooth circular pattern** (G6): single tooth generated then patterned around hub.
+- **Base flange** (G7–G8): separate circle profile extruded and joined to gear hub.
+- **Side holes with different depths** (G10–G11): outer hole through-all, inner hole partial depth.
+- **Symmetrical wedge cut** (G13): slotted wedge feature cut symmetrically.
+- Volume difference (0.29%) — excellent accuracy on a complex helical gear part with 26,425 faces.
 
 ### Stage 4 — Validation (`*_compare_stl_files.py`)
 
@@ -405,6 +430,23 @@ Watertight mesh:         ✅ 0 free edges (33 faces)
 Solid volume:            3,787.859 mm³  (original: 3,770.317 mm³)
 ```
 
+## Part 10: Art4MotorGear — Results
+
+```
+🟢 EXCELLENT across all metrics
+
+Volume % error:          0.286%
+Symmetric diff % error:  0.370%
+Overlap coverage:        99.96%
+Bounding box:            ✅ PASS (all axes within ±0.1mm)
+
+Watertight mesh:         ✅ 0 free edges (26,425 faces)
+Solid volume:            6,955.164 mm³  (original: 6,935.312 mm³)
+
+Note: Helical gear with mathematically perfect twisted sweep (+46.835°),
+10-tooth circular pattern, 60 interpolation frames. STEP file also exported.
+```
+
 ---
 
 ## Repository Structure
@@ -491,13 +533,23 @@ Thor-AssemblyArt4/
 │   ├── csv_data_9_Art4MotorFix/
 │   ├── csv_merged/
 │   ├── 0_preprocess_csvs.py
-│   ├── 9_1_Art4MotorFix_build123d.py       # G1–G7
+│   ├── 9_1_Art4MotorFix_build123d.py
 │   ├── 9_2_compare_stl_files.py
 │   ├── 9_Art4MotorFix_original.stl
 │   ├── 9_Art4MotorFix_G_1_7.stl
 │   └── 9_Art4MotorFix_G_1_7.step
 │
-└── 10_Art4MotorGear/
+├── 10_Art4MotorGear/
+│   ├── csv_data_10_Art4MotorGear/
+│   ├── csv_merged/
+│   ├── 0_preprocess_csvs.py
+│   ├── 10_1_Art4MotorGear.py               # G1–G15
+│   ├── 10_2_compare_stl_files.py
+│   ├── 10_Art4MotorGear_original.stl
+│   ├── 10_Art4MotorGear_G_1_15.stl
+│   └── 10_Art4MotorGear_G_1_15.step
+│
+└── Assembly/
     └── (In Progress)
 ```
 
@@ -530,10 +582,10 @@ manifold3d
 python 0_preprocess_csvs.py
 
 # 2. Build the part
-python 9_1_Art4MotorFix_build123d.py
+python 10_1_Art4MotorGear.py
 
 # 3. Compare against original
-python 9_2_compare_stl_files.py
+python 10_2_compare_stl_files.py
 ```
 
 ---
