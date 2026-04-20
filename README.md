@@ -261,7 +261,7 @@ Thor-AssemblyArt4/
     ├── assemble_stl_files.py               # STL assembly script (numpy-stl)
     ├── thor_assembly_transforms.txt        # Fusion 360 transform data
     ├── requirements.txt
-    ├── Thor_AssemblyArt4_STEP.step         # ← Final STEP assembly
+    ├── Thor_AssemblyArt4_STEP.step.zip     # ← Final STEP assembly (compressed — GitHub 100MB limit)
     ├── Thor_AssemblyArt4_STEP.stl          # ← STL from STEP assembly
     ├── Thor_AssemblyArt4_STL.stl           # ← STL mesh assembly
     ├── 1_Art4BearingFix_build123d_G_1_9.step
